@@ -44,4 +44,10 @@ body: {
 
 .seat-button.selected-seat {
   background-color: green;
+  color: white;
+}
+
+.next {
+  background-color: green;
+  color: white;
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 const seatMap = document.getElementById('seat-map');
+const submitSeatsButton = document.getElementById('submit-seats');
 
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
@@ -24,3 +25,12 @@ for (let i = 0; i < rows; i++) {
   }
   seatMap.appendChild(newRow);
 }
+
+submitSeatsButton.onclick = function () {
+  let selectedSeatEls = document.getElementsByClassName('selected-seat');
+  let selectedSeats = [];
+  for (let el of selectedSeatEls) {
+    selectedSeats.push(el.id);
+  }
+  console.log(selectedSeats);
+};
