@@ -13,7 +13,43 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="container"></div>
+    <div id="left" class="container">
+      <div id="plane-select-container" class="container">
+        <label for="plane-select" class="label">Plane Model</label>
+        <select name="plane-select" id="plane-select">
+          <option value="747">Boeing 747</option>
+          <option value="737">Boeing 737</option>
+        </select>
+      </div>
+      <div id="boarding-button-container" class="container">
+        <button type="button" id="boarding-button">Start Boarding</button>
+      </div>
+      <div id="boarding-time-container" class="container">
+        <div id="elapsed-boarding-time-label" class="label">
+          Elapsed Boarding Time
+        </div>
+        <div id="elapsed-boarding-time" class="value">00:00:00</div>
+        <div id="remaining-boarding-time-label" class="label">
+          Estimated Time Remaining
+        </div>
+        <div id="remaining-boarding-time" class="value">00:00:00</div>
+      </div>
+      <div id="baggage-capacity-container" class="container">
+        <div id="baggage-capacity-label" class="label">
+          Overhead Baggage Capacity
+        </div>
+        <div id="baggage-capacity" class="value">0 / 0</div>
+      </div>
+    </div>
+    <div id="right" class="container">
+      <div id="seat-map-legend">
+        <div class="seat-status">Not checked in</div>
+        <div class="seat-status">Checked in</div>
+        <div class="seat-status">Boarding</div>
+        <div class="seat-status">Seated</div>
+      </div>
+      <div id="seat-map"></div>
+    </div>
     <script src="script.js" async defer></script>
   </body>
 </html>

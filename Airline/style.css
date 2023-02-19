@@ -1,0 +1,25 @@
+body {
+  height: 100vh;
+  width: 100vw;
+  background-color: beige;
+  display: flex;
+  justify-content: space-around;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#right {
+  height: 100%;
+  min-width: 30%;
+}
+
+#seat-map {
+  background-color: white;
+  height: 70%;
+  width: 100%;
+}
