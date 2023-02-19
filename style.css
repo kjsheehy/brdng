@@ -15,7 +15,7 @@ body: {
   align-items: space-around;
   justify-content: space-around;
   height: 100vh;
-  width: 100%;
+  width: 100vw;
 }
 
 .prompt {
@@ -24,8 +24,21 @@ body: {
 #seat-map {
   background-color: white;
   padding: 10px;
-  margin: 10px;
-  border: 5px;
   border-color: black;
   height: 80%;
+  width: 90vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.seat-row {
+  display: flex;
+  /* flex-direction: row; */
+  justify-content: space-around;
+  /* width: 100%; */
+}
+
+#seat-button {
 }
