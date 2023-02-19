@@ -1,0 +1,31 @@
+html {
+  background-color: beige;
+}
+
+body: {
+  display: flex;
+  flex-direction: column;
+  align-items: space-around;
+  justify-content: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: space-around;
+  justify-content: space-around;
+  height: 100vh;
+  width: 100%;
+}
+
+.prompt {
+}
+
+#seat-map {
+  background-color: white;
+  padding: 10px;
+  margin: 10px;
+  border: 5px;
+  border-color: black;
+  height: 80%;
+}
