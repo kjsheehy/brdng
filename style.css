@@ -35,10 +35,13 @@ body: {
 
 .seat-row {
   display: flex;
-  /* flex-direction: row; */
   justify-content: space-around;
-  /* width: 100%; */
 }
 
-#seat-button {
+.seat-button {
+  background-color: white;
+}
+
+.seat-button.selected-seat {
+  background-color: green;
 }

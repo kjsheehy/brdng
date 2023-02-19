@@ -17,6 +17,9 @@ for (let i = 0; i < rows; i++) {
     seatButton.setAttribute('id', i + 1 + seats[j]);
     let seatID = document.createTextNode(i + 1 + seats[j]);
     seatButton.appendChild(seatID);
+    seatButton.onclick = function () {
+      this.classList.toggle('selected-seat');
+    };
     newRow.appendChild(seatButton);
   }
   seatMap.appendChild(newRow);
