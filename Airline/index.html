@@ -42,11 +42,23 @@
       </div>
     </div>
     <div id="right" class="container">
-      <div id="seat-map-legend">
-        <div class="seat-status">Not checked in</div>
-        <div class="seat-status">Checked in</div>
-        <div class="seat-status">Boarding</div>
-        <div class="seat-status">Seated</div>
+      <div id="seat-map-legend" class="container">
+        <div class="legend-item container" id="not-checked-in">
+          <div class="seat-icon"></div>
+          <div class="seat-status">Not checked in</div>
+        </div>
+        <div class="legend-item container" id="checked-in">
+          <div class="seat-icon"></div>
+          <div class="seat-status">Checked in</div>
+        </div>
+        <div class="legend-item container" id="boarding">
+          <div class="seat-icon"></div>
+          <div class="seat-status">Boarding</div>
+        </div>
+        <div class="legend-item container" id="seated">
+          <div class="seat-icon"></div>
+          <div class="seat-status">Seated</div>
+        </div>
       </div>
       <div id="seat-map"></div>
     </div>

@@ -3,11 +3,18 @@
 const startBoardingButton = document.getElementById('boarding-button');
 const elapsedTimeEl = document.getElementById('elapsed-boarding-time');
 let startTime;
+const seatMap = document.getElementById('seat-map');
+const baggageCapacityEl = document.getElementById('baggage-capacity');
+
+const rows = 20;
+const seats = ['A', 'B', 'C', 'D', 'E'];
+const baggageCapacity = 50;
+
+populateSeatMap(rows, seats);
+baggageCapacityEl.textContent = `0 / ${baggageCapacity}`;
 
 const startBoarding = function () {
   startTime = new Date();
-  //console.log(startTime);
-  //console.log('hours', startTime.getHours());
   setInterval(updateTime, 1000);
 };
 
@@ -30,6 +37,22 @@ const msToHMS = function (ms) {
   return hours + ':' + minutes + ':' + seconds;
 };
 
-console.log(msToHMS(3905001));
-
 startBoardingButton.onclick = startBoarding;
+
+function populateSeatMap(rows, seats) {
+  for (let i = 0; i < rows; i++) {
+    const newRow = document.createElement('div');
+    newRow.setAttribute('class', 'seat-row');
+    newRow.setAttribute('id', `row${i + 1}`);
+
+    for (let j = 0; j < seats.length; j++) {
+      let seatIcon = document.createElement('div');
+      seatIcon.setAttribute('class', 'seat-icon');
+      seatIcon.setAttribute('id', i + 1 + seats[j]);
+      let seatID = document.createTextNode(i + 1 + seats[j]);
+      seatIcon.appendChild(seatID);
+      newRow.appendChild(seatIcon);
+    }
+    seatMap.appendChild(newRow);
+  }
+}
