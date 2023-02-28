@@ -72,6 +72,17 @@ app.put('/api/seats/:id', (req, res) => {
   res.send(seat);
 });
 
+//DELETE Request Handler
+// Not sure I will need this one in the application, but I'm going to implement it to delete a seat just for learning purposes.
+app.delete('/api/seats/:id', (req, res) => {
+  const seatIndex = seats.findIndex((s) => s.id === req.params.id);
+  if (!seatIndex)
+    res.status(404).send(`Seat not found with id ${req.params.id}`);
+
+  const [seat] = seats.splice(seatIndex, 1);
+  res.send(seat);
+});
+
 function validateSeats(seat) {
   const schema = Joi.object({
     id: Joi.string().pattern(new RegExp('[0-9]{1,2}[A-Z]')).required(),
