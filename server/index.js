@@ -57,6 +57,20 @@ app.post('/api/seats', (req, res) => {
 });
 
 //UPDATE Request Handler
+// This one will be used by the app to move seats through the 4 statuses
+app.put('/api/seats/:id', (req, res) => {
+  const seat = seats.find((s) => s.id === req.params.id);
+  if (!seat) res.status(404).send(`Seat not found with id ${req.params.id}`);
+
+  const { error } = validateSeats(req.body);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+    return;
+  }
+
+  seat.status = req.body.status;
+  res.send(seat);
+});
 
 function validateSeats(seat) {
   const schema = Joi.object({
