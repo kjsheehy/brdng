@@ -5,7 +5,14 @@ const { application } = require('express');
 const express = require('express');
 const app = express();
 const Joi = require('joi');
+const cors = require('cors');
+
 app.use(express.json());
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 
 const rows = 20;
 const columns = ['A', 'B', 'C', 'D', 'E'];

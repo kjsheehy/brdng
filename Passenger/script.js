@@ -26,11 +26,27 @@ for (let i = 0; i < rows; i++) {
   seatMap.appendChild(newRow);
 }
 
+const updateSeatStatus = (id, newStatus) => {
+  fetch(`http://localhost:5001/api/seats/${id}`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      id: id,
+      status: newStatus,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data));
+};
+
 submitSeatsButton.onclick = function () {
   let selectedSeatEls = document.getElementsByClassName('selected-seat');
   let selectedSeats = [];
   for (let el of selectedSeatEls) {
     selectedSeats.push(el.id);
+  }
+  for (let i = 0; i < selectedSeats.length; i++) {
+    updateSeatStatus(selectedSeats[i], 'Checked in');
   }
   console.log(selectedSeats);
 };
