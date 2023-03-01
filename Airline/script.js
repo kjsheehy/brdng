@@ -13,6 +13,21 @@ const baggageCapacity = 50;
 populateSeatMap(rows, seats);
 baggageCapacityEl.textContent = `0 / ${baggageCapacity}`;
 
+const updateSeatStatus = function () {
+  fetch(`http://localhost:5001/api/seats`)
+    .then((response) => response.json())
+    .then((seatArr) => {
+      console.log(seatArr);
+      seatArr.forEach((seat) => {
+        let seatEl = document.getElementById(seat.id);
+        seatEl.classList.remove('not-checked-in', 'checked-in', 'boarding', 'seated');
+        seatEl.classList.add(seat.status);
+      });
+    });
+};
+
+setInterval(updateSeatStatus, 5000);
+
 const startBoarding = function () {
   startTime = new Date();
   setInterval(updateTime, 1000);

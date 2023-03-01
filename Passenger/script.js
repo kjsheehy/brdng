@@ -46,7 +46,7 @@ submitSeatsButton.onclick = function () {
     selectedSeats.push(el.id);
   }
   for (let i = 0; i < selectedSeats.length; i++) {
-    updateSeatStatus(selectedSeats[i], 'Checked in');
+    updateSeatStatus(selectedSeats[i], 'checked-in');
   }
   console.log(selectedSeats);
 };

@@ -39,16 +39,16 @@ body {
   margin-top: 0.25em;
 }
 
-.legend-item#not-checked-in .seat-icon {
+.not-checked-in.seat-icon {
   background-color: gray;
 }
-.legend-item#checked-in .seat-icon {
+.checked-in.seat-icon {
   background-color: orange;
 }
-.legend-item#boarding .seat-icon {
+.boarding.seat-icon {
   background-color: yellow;
 }
-.legend-item#seated .seat-icon {
+.seated.seat-icon {
   background-color: green;
 }
 

@@ -23,7 +23,7 @@ function populateSeats(rows, columns) {
     for (let j = 0; j < columns.length; j++) {
       let newSeat = {
         id: i + 1 + columns[j],
-        status: 'Not checked in',
+        status: 'not-checked-in',
       };
       seats.push(newSeat);
     }
@@ -94,7 +94,7 @@ function validateSeats(seat) {
   const schema = Joi.object({
     id: Joi.string().pattern(new RegExp('[0-9]{1,2}[A-Z]')).required(),
     status: Joi.string()
-      .valid('Not checked in', 'Checked in', 'Boarding', 'Seated')
+      .valid('not-checked in', 'checked-in', 'boarding', 'seated')
       .required(),
   });
   return schema.validate(seat);
