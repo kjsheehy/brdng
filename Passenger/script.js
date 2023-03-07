@@ -1,5 +1,7 @@
 'use strict';
 
+const page1 = document.getElementById('check-in-page');
+const messageEl = document.getElementById('message');
 const seatMap = document.getElementById('seat-map');
 const submitSeatsButton = document.getElementById('submit-seats');
 const bagsDropdown = document.getElementById('number-bags');
@@ -36,8 +38,12 @@ const updateSeatStatus = (id, newStatus) => {
       status: newStatus,
     }),
   })
-    .then((response) => response.json())
-    .then((data) => console.log(data));
+    .then((res) => {
+      if (!res.ok) throw new Error('Something went wrong');
+      return res.json();
+    })
+    .then((data) => console.log(data))
+    .catch((error) => console.log(error));
 };
 
 function updateBagsDropdown() {
@@ -75,6 +81,16 @@ submitSeatsButton.onclick = function () {
       bags: bagsDropdown.options[bagsDropdown.selectedIndex].value,
     }),
   })
-    .then((res) => res.json())
-    .then((data) => console.log(data));
+    .then((res) => {
+      if (!res.ok)
+        throw new Error('Something went wrong. Please try that again.');
+      return res.json();
+    })
+    .then((data) => {
+      console.log(data);
+      page1.classList.add('hidden');
+      messageEl.classList.remove('hidden');
+      messageEl.innerText = `You've checked in seat(s) ${data.seats} with a total of ${data.bags} overhead carry-on bags. We'll let you know here when your party can board.`;
+    })
+    .catch((error) => console.log(error));
 };

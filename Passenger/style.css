@@ -18,7 +18,8 @@ body: {
   width: 100vw;
 }
 
-.prompt {
+.hidden {
+  visibility: hidden;
 }
 
 #seat-map {

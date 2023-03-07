@@ -79,7 +79,7 @@ app.post('/api/parties', (req, res) => {
     bags: req.body.bags,
   };
   parties.push(newParty);
-  res.send(newParty);
+  res.status(201).send(newParty);
 });
 
 //UPDATE Request Handler
