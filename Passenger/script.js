@@ -67,13 +67,14 @@ submitSeatsButton.onclick = function () {
     updateSeatStatus(selectedSeats[i], 'checked-in');
   }
   console.log(bagsDropdown.options[bagsDropdown.selectedIndex].value);
-  // fetch('http://localhost:5001/api/parties',
-  //   method: 'POST',
-  //   headers: {'content-type': 'application/json'},
-  //   body: JSON.stringify({
-  //     seats: selectedSeats,
-  //     bags: bagsDropdown.options[this.selectedIndex].value,
-  //   }),
-
-  //   )
+  fetch('http://localhost:5001/api/parties', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      seats: selectedSeats,
+      bags: bagsDropdown.options[bagsDropdown.selectedIndex].value,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data));
 };
