@@ -47,6 +47,11 @@ body: {
   color: white;
 }
 
+#number-bags {
+  width: 5em;
+  margin: auto;
+}
+
 .next {
   background-color: green;
   color: white;

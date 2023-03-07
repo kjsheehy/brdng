@@ -17,6 +17,7 @@ app.use(
 const rows = 20;
 const columns = ['A', 'B', 'C', 'D', 'E'];
 const seats = [];
+const parties = [{ seats: ['1B', '5C'], bags: 2 }];
 
 function populateSeats(rows, columns) {
   for (let i = 0; i < rows; i++) {
@@ -47,6 +48,10 @@ app.get('/api/seats/:id', (req, res) => {
   res.send(seat);
 });
 
+app.get('/api/parties', (req, res) => {
+  res.send(parties);
+});
+
 //CREATE Request Handler
 // I don't think I'll need this for seats in my application, but I do think I'll need it for something else. I'm going to add this alongside the tutorial I'm following and replace it later on with a CREATE handler that's useful to the application.
 app.post('/api/seats', (req, res) => {
@@ -61,6 +66,20 @@ app.post('/api/seats', (req, res) => {
   };
   seats.push(newSeat);
   res.send(newSeat);
+});
+
+app.post('/api/parties', (req, res) => {
+  const { error } = validateParties(req.body);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+    return;
+  }
+  const newParty = {
+    seats: req.body.seats,
+    bags: req.body.bags,
+  };
+  parties.push(newParty);
+  res.send(newParty);
 });
 
 //UPDATE Request Handler
@@ -98,6 +117,16 @@ function validateSeats(seat) {
       .required(),
   });
   return schema.validate(seat);
+}
+
+function validateParties(party) {
+  const schema = Joi.object({
+    seats: Joi.array()
+      .items(Joi.string().pattern(new RegExp('[0-9]{1,2}[A-Z]')))
+      .required(),
+    bags: Joi.number().required(),
+  });
+  return schema.validate(party);
 }
 
 const port = process.env.PORT || 5001;
