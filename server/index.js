@@ -1,7 +1,5 @@
 'use strict';
 
-const { application } = require('express');
-
 const express = require('express');
 const app = express();
 const Joi = require('joi');
@@ -18,6 +16,11 @@ const rows = 20;
 const columns = ['A', 'B', 'C', 'D', 'E'];
 const seats = [];
 const parties = [{ seats: ['1B', '5C'], bags: 2 }];
+let baggage = {
+  overhead: 0,
+  gateCheck: 0,
+  capacity: 50,
+};
 
 function populateSeats(rows, columns) {
   for (let i = 0; i < rows; i++) {
@@ -76,7 +79,12 @@ app.post('/api/parties', (req, res) => {
   }
   const newParty = {
     seats: req.body.seats,
-    bags: req.body.bags,
+    bags: {
+      number: req.body.bags.number,
+      location: trackBaggageCapacity(req.body.bags.number)
+        ? 'overhead'
+        : 'gateCheck',
+    },
   };
   parties.push(newParty);
   res.status(201).send(newParty);
@@ -124,9 +132,22 @@ function validateParties(party) {
     seats: Joi.array()
       .items(Joi.string().pattern(new RegExp('[0-9]{1,2}[A-Z]')))
       .required(),
-    bags: Joi.number().required(),
+    bags: Joi.object({
+      number: Joi.number().required(),
+      location: Joi.string().valid('overhead', 'gateCheck'),
+    }),
   });
   return schema.validate(party);
+}
+
+function trackBaggageCapacity(numBags) {
+  if (numBags + baggage.overhead <= baggage.capacity) {
+    baggage.overhead += numBags;
+    return true;
+  } else {
+    baggage.gateCheck += numBags;
+    return false;
+  }
 }
 
 const port = process.env.PORT || 5001;

@@ -42,7 +42,6 @@ const updateSeatStatus = (id, newStatus) => {
       if (!res.ok) throw new Error('Something went wrong');
       return res.json();
     })
-    .then((data) => console.log(data))
     .catch((error) => console.log(error));
 };
 
@@ -72,13 +71,14 @@ submitSeatsButton.onclick = function () {
   for (let i = 0; i < selectedSeats.length; i++) {
     updateSeatStatus(selectedSeats[i], 'checked-in');
   }
-  console.log(bagsDropdown.options[bagsDropdown.selectedIndex].value);
   fetch('http://localhost:5001/api/parties', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       seats: selectedSeats,
-      bags: bagsDropdown.options[bagsDropdown.selectedIndex].value,
+      bags: {
+        number: bagsDropdown.options[bagsDropdown.selectedIndex].value,
+      },
     }),
   })
     .then((res) => {
@@ -88,9 +88,14 @@ submitSeatsButton.onclick = function () {
     })
     .then((data) => {
       console.log(data);
+      let bagLocationMessage = '';
+      if (data.bags.location === 'overhead')
+        bagLocationMessage = ` There is space for your bags in the overhead compartments. We're 100% sure of it, and airlines NEVER over-promise and under-deliver.`;
+      else if (data.bags.location === 'gateCheck')
+        bagLocationMessage = ` There will not be space for your bags in the overhead compartments. Please take your bags to the counter now to gate check them. With one text, we can have your bags "disappeared", so don't give us any attitude.`;
       page1.classList.add('hidden');
       messageEl.classList.remove('hidden');
-      messageEl.innerText = `You've checked in seat(s) ${data.seats} with a total of ${data.bags} overhead carry-on bags. We'll let you know here when your party can board.`;
+      messageEl.innerText = `You've checked in seat(s) ${data.seats} with a total of ${data.bags.number} carry-on bags. We'll let you know here when your party can board.${bagLocationMessage}`;
     })
     .catch((error) => console.log(error));
 };
