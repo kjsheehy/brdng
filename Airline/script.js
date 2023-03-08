@@ -4,42 +4,56 @@ const startBoardingButton = document.getElementById('boarding-button');
 const elapsedTimeEl = document.getElementById('elapsed-boarding-time');
 let startTime;
 const seatMap = document.getElementById('seat-map');
-const baggageCapacityEl = document.getElementById('baggage-capacity');
+const overheadEl = document.getElementById('overhead');
+const gateCheckEl = document.getElementById('gate-check');
 
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
 const baggageCapacity = 50;
 
 populateSeatMap(rows, seats);
-baggageCapacityEl.textContent = `0 / ${baggageCapacity}`;
+overheadEl.textContent = `0 / ${baggageCapacity}`;
+setInterval(updateInfo, 5000);
 
-const updateSeatStatus = function () {
+function updateInfo() {
   fetch(`http://localhost:5001/api/seats`)
     .then((response) => response.json())
     .then((seatArr) => {
-      console.log(seatArr);
       seatArr.forEach((seat) => {
         let seatEl = document.getElementById(seat.id);
-        seatEl.classList.remove('not-checked-in', 'checked-in', 'boarding', 'seated');
+        seatEl.classList.remove(
+          'not-checked-in',
+          'checked-in',
+          'boarding',
+          'seated'
+        );
         seatEl.classList.add(seat.status);
       });
     });
-};
-
-setInterval(updateSeatStatus, 5000);
+  fetch('http://localhost:5001/api/baggage')
+    .then((res) => {
+      if (!res.ok)
+        throw new Error('Error fetching baggage info from the server');
+      return res.json();
+    })
+    .then((data) => {
+      overheadEl.textContent = `${data.overhead} / ${data.capacity}`;
+      gateCheckEl.textContent = `${data.gateCheck}`;
+    })
+    .catch((error) => console.log(error));
+}
 
 const startBoarding = function () {
   startTime = new Date();
   setInterval(updateTime, 1000);
 };
 
-const updateTime = function () {
+function updateTime() {
   let elapsedTime = Date.now() - startTime;
-
   elapsedTimeEl.textContent = msToHMS(elapsedTime);
-};
+}
 
-const msToHMS = function (ms) {
+function msToHMS(ms) {
   let time = ms / 1000;
   let hours = Math.trunc(time / 3600);
   let minutes = Math.trunc((time % 3600) / 60);
@@ -50,7 +64,7 @@ const msToHMS = function (ms) {
   seconds = seconds >= 10 ? seconds : '0' + seconds;
 
   return hours + ':' + minutes + ':' + seconds;
-};
+}
 
 startBoardingButton.onclick = startBoarding;
 

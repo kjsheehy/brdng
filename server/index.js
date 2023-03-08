@@ -16,7 +16,7 @@ const rows = 20;
 const columns = ['A', 'B', 'C', 'D', 'E'];
 const seats = [];
 const parties = [{ seats: ['1B', '5C'], bags: 2 }];
-let baggage = {
+const baggage = {
   overhead: 0,
   gateCheck: 0,
   capacity: 50,
@@ -53,6 +53,10 @@ app.get('/api/seats/:id', (req, res) => {
 
 app.get('/api/parties', (req, res) => {
   res.send(parties);
+});
+
+app.get('/api/baggage', (req, res) => {
+  res.send(baggage);
 });
 
 //CREATE Request Handler
