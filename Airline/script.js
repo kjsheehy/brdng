@@ -10,6 +10,7 @@ const gateCheckEl = document.getElementById('gate-check');
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
 const baggageCapacity = 50;
+const flightID = 'FA227';
 
 populateSeatMap(rows, seats);
 overheadEl.textContent = `0 / ${baggageCapacity}`;
@@ -44,8 +45,23 @@ function updateInfo() {
 }
 
 const startBoarding = function () {
-  startTime = new Date();
-  setInterval(updateTime, 1000);
+  fetch('http://localhost:5001/api/boardingStart', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      flightID,
+    }),
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error('Something went wrong');
+      return res.json();
+    })
+    .then((data) => {
+      startTime = new Date();
+      setInterval(updateTime, 1000);
+      startBoardingButton.disabled = true;
+    })
+    .catch((error) => console.log(errr));
 };
 
 function updateTime() {

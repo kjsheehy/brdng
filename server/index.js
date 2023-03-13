@@ -21,6 +21,23 @@ const baggage = {
   gateCheck: 0,
   capacity: 50,
 };
+const flights = [
+  {
+    flightID: 'FA227',
+    flightTime: new Date('2023-12-17T03:24:00'),
+    boardingStart: undefined,
+  },
+  {
+    flightID: 'FA863',
+    flightTime: new Date('2023-12-17T05:45:00'),
+    boardingStart: undefined,
+  },
+  {
+    flightID: 'FA986',
+    flightTime: new Date('2023-12-17T012:30:00'),
+    boardingStart: undefined,
+  },
+];
 
 function populateSeats(rows, columns) {
   for (let i = 0; i < rows; i++) {
@@ -94,7 +111,7 @@ app.post('/api/parties', (req, res) => {
   res.status(201).send(newParty);
 });
 
-//UPDATE Request Handler
+//UPDATE Request Handlers
 // This one will be used by the app to move seats through the 4 statuses
 app.put('/api/seats/:id', (req, res) => {
   const seat = seats.find((s) => s.id === req.params.id);
@@ -108,6 +125,17 @@ app.put('/api/seats/:id', (req, res) => {
 
   seat.status = req.body.status;
   res.send(seat);
+});
+
+//Airline UI tells Server when to start the boarding process
+app.put('/api/boardingStart', (req, res) => {
+  const flight = flights.find((f) => f.flightID === req.body.flightID);
+  if (!flight) {
+    res.status(404).send(`Flight with ID ${req.body.flightID} not found`);
+    return;
+  }
+  flight.boardingStart = new Date();
+  res.send(flight);
 });
 
 //DELETE Request Handler
