@@ -5,6 +5,9 @@ const app = express();
 const Joi = require('joi');
 const cors = require('cors');
 
+const port = process.env.PORT || 5001;
+app.listen(port, () => console.log(`listening on port ${port}...`));
+
 app.use(express.json());
 app.use(
   cors({
@@ -15,7 +18,7 @@ app.use(
 const rows = 20;
 const columns = ['A', 'B', 'C', 'D', 'E'];
 const seats = [];
-const parties = [{ seats: ['1B', '5C'], bags: 2 }];
+const parties = [];
 const baggage = {
   overhead: 0,
   gateCheck: 0,
@@ -72,6 +75,14 @@ app.get('/api/parties', (req, res) => {
   res.send(parties);
 });
 
+app.get('/api/boardingStatus/:id', (req, res) => {
+  let party = parties.find((p) => p.id === req.params.id);
+  console.log(party);
+  if (!party)
+    res.status(404).send(`Party with id '${req.params.id}' not found.`);
+  res.send(party.readyToBoard);
+});
+
 app.get('/api/baggage', (req, res) => {
   res.send(baggage);
 });
@@ -99,6 +110,8 @@ app.post('/api/parties', (req, res) => {
     return;
   }
   const newParty = {
+    id: req.body.seats[0],
+    flightID: req.body.flightID,
     seats: req.body.seats,
     bags: {
       number: req.body.bags.number,
@@ -106,6 +119,8 @@ app.post('/api/parties', (req, res) => {
         ? 'overhead'
         : 'gateCheck',
     },
+    checkInTime: new Date(),
+    readyToBoard: false,
   };
   parties.push(newParty);
   res.status(201).send(newParty);
@@ -135,6 +150,7 @@ app.put('/api/boardingStart', (req, res) => {
     return;
   }
   flight.boardingStart = new Date();
+  board(flight);
   res.send(flight);
 });
 
@@ -161,6 +177,7 @@ function validateSeats(seat) {
 
 function validateParties(party) {
   const schema = Joi.object({
+    flightID: Joi.string().required(),
     seats: Joi.array()
       .items(Joi.string().pattern(new RegExp('[0-9]{1,2}[A-Z]')))
       .required(),
@@ -182,5 +199,18 @@ function trackBaggageCapacity(numBags) {
   }
 }
 
-const port = process.env.PORT || 5001;
-app.listen(port, () => console.log(`listening on port ${port}...`));
+function board() {
+  //For starters, let's just tell the first party to board. (Rather, let's indicate in the first party's object that it is ready to board.)
+  // How can I do that?
+  // How about sorting the parties array by checkInTime?
+  // But won't the parties array already be sorted by checkInTime because I added each party to the array when the party checked in?
+  //Yep!
+  //So, given that the array is already sorted by checkInTime, I should just need to set the first party object to be ready to board (object at index 0)
+
+  //parties[0].readyToBoard = true;
+  //console.log(parties[0]);
+  if (parties[0]) {
+    parties[0].readyToBoard = true;
+    console.log(parties[0]);
+  }
+}

@@ -8,6 +8,8 @@ const bagsDropdown = document.getElementById('number-bags');
 
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
+const flightID = 'FA227';
+let partyID = undefined;
 
 for (let i = 0; i < rows; i++) {
   const newRow = document.createElement('div');
@@ -75,6 +77,7 @@ submitSeatsButton.onclick = function () {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
+      flightID,
       seats: selectedSeats,
       bags: {
         number: bagsDropdown.options[bagsDropdown.selectedIndex].value,
@@ -87,7 +90,7 @@ submitSeatsButton.onclick = function () {
       return res.json();
     })
     .then((data) => {
-      console.log(data);
+      partyID = data.id;
       let bagLocationMessage = '';
       if (data.bags.location === 'overhead')
         bagLocationMessage = ` There is space for your bags in the overhead compartments. We're 100% sure of it, and airlines NEVER over-promise and under-deliver.`;
@@ -96,6 +99,22 @@ submitSeatsButton.onclick = function () {
       page1.classList.add('hidden');
       messageEl.classList.remove('hidden');
       messageEl.innerText = `You've checked in seat(s) ${data.seats} with a total of ${data.bags.number} carry-on bags. We'll let you know here when your party can board.${bagLocationMessage}`;
+      setInterval(checkBoardingStatus, 5000);
     })
     .catch((error) => console.log(error));
 };
+
+function checkBoardingStatus() {
+  fetch(`http://localhost:5001/api/boardingStatus/${partyID}`)
+    .then((res) => res.json())
+    .then((readyToBoard) => {
+      console.log(
+        `Boarding status for party id ${partyID}: ${
+          readyToBoard ? 'ready' : 'not ready'
+        }`
+      );
+      if (readyToBoard) {
+        messageEl.innerText = 'Your party may now board.';
+      }
+    });
+}
