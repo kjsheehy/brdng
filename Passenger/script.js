@@ -5,11 +5,13 @@ const messageEl = document.getElementById('message');
 const seatMap = document.getElementById('seat-map');
 const submitSeatsButton = document.getElementById('submit-seats');
 const bagsDropdown = document.getElementById('number-bags');
+const seatedButton = document.getElementById('seated');
 
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
 const flightID = 'FA227';
 let partyID = undefined;
+let intervalID;
 
 for (let i = 0; i < rows; i++) {
   const newRow = document.createElement('div');
@@ -99,22 +101,30 @@ submitSeatsButton.onclick = function () {
       page1.classList.add('hidden');
       messageEl.classList.remove('hidden');
       messageEl.innerText = `You've checked in seat(s) ${data.seats} with a total of ${data.bags.number} carry-on bags. We'll let you know here when your party can board.${bagLocationMessage}`;
-      setInterval(checkBoardingStatus, 5000);
+      intervalID = setInterval(checkBoardingStatus, 5000);
     })
     .catch((error) => console.log(error));
+};
+
+seatedButton.onclick = function () {
+  fetch(`http://localhost:5001/api/seated/${partyID}`, {
+    method: 'PUT',
+  }).then((res) => {
+    messageEl.innerText = res.ok
+      ? 'Thank you for using brdng! Enjoy your flight!'
+      : 'Something went wrong. Please use the back button and try again.';
+    seatedButton.classList.add('hidden');
+  });
 };
 
 function checkBoardingStatus() {
   fetch(`http://localhost:5001/api/boardingStatus/${partyID}`)
     .then((res) => res.json())
     .then((readyToBoard) => {
-      console.log(
-        `Boarding status for party id ${partyID}: ${
-          readyToBoard ? 'ready' : 'not ready'
-        }`
-      );
       if (readyToBoard) {
         messageEl.innerText = 'Your party may now board.';
+        seatedButton.classList.remove('hidden');
+        clearInterval(intervalID);
       }
     });
 }

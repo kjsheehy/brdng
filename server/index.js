@@ -79,7 +79,9 @@ app.get('/api/boardingStatus/:id', (req, res) => {
   let party = parties.find((p) => p.id === req.params.id);
   console.log(party);
   if (!party)
-    res.status(404).send(`Party with id '${req.params.id}' not found.`);
+    res
+      .status(404)
+      .send(JSON.stringify(`Party with id '${req.params.id}' not found.`));
   res.send(party.readyToBoard);
 });
 
@@ -154,6 +156,21 @@ app.put('/api/boardingStart', (req, res) => {
   res.send(flight);
 });
 
+//Passenger UI tells Server when party is seated
+app.put('/api/seated/:partyID', (req, res) => {
+  const party = parties.find((p) => p.id === req.params.partyID);
+  console.log('party: ', party);
+  if (!party) {
+    res.status(404).send(`Party with id ${req.paramss.partyID} not found.`);
+    return;
+  }
+  party.seats.forEach((partySeat) => {
+    const seat = seats.find((seatsSeat) => partySeat === seatsSeat.id);
+    seat.status = 'seated';
+  });
+  res.send();
+});
+
 //DELETE Request Handler
 // Not sure I will need this one in the application, but I'm going to implement it to delete a seat just for learning purposes.
 app.delete('/api/seats/:id', (req, res) => {
@@ -211,6 +228,5 @@ function board() {
   //console.log(parties[0]);
   if (parties[0]) {
     parties[0].readyToBoard = true;
-    console.log(parties[0]);
   }
 }
