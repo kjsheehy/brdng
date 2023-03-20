@@ -17,18 +17,20 @@ overheadEl.textContent = `0 / ${baggageCapacity}`;
 setInterval(updateInfo, 5000);
 
 function updateInfo() {
-  fetch(`http://localhost:5001/api/seats`)
-    .then((response) => response.json())
-    .then((seatArr) => {
-      seatArr.forEach((seat) => {
-        let seatEl = document.getElementById(seat.id);
-        seatEl.classList.remove(
-          'not-checked-in',
-          'checked-in',
-          'boarding',
-          'seated'
-        );
-        seatEl.classList.add(seat.status);
+  fetch('http://localhost:5001/api/parties')
+    .then((res) => res.json())
+    .then((parties) => {
+      parties.forEach((party) => {
+        party.seats.forEach((seat) => {
+          let seatEl = document.getElementById(seat);
+          seatEl.classList.remove(
+            'not-checked-in',
+            'checked-in',
+            'boarding',
+            'seated'
+          );
+          seatEl.classList.add(party.status);
+        });
       });
     });
   fetch('http://localhost:5001/api/baggage')

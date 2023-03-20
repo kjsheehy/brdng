@@ -47,7 +47,6 @@ function populateSeats(rows, columns) {
     for (let j = 0; j < columns.length; j++) {
       let newSeat = {
         id: i + 1 + columns[j],
-        status: 'not-checked-in',
       };
       seats.push(newSeat);
     }
@@ -57,10 +56,6 @@ function populateSeats(rows, columns) {
 populateSeats(rows, columns);
 
 //READ request handlers
-app.get('/', (req, res) => {
-  res.send('Hello world');
-});
-
 app.get('/api/seats', (req, res) => {
   res.send(seats);
 });
@@ -82,29 +77,14 @@ app.get('/api/boardingStatus/:id', (req, res) => {
     res
       .status(404)
       .send(JSON.stringify(`Party with id '${req.params.id}' not found.`));
-  res.send(party.readyToBoard);
+  res.send(JSON.stringify(party.status));
 });
 
 app.get('/api/baggage', (req, res) => {
   res.send(baggage);
 });
 
-//CREATE Request Handler
-// I don't think I'll need this for seats in my application, but I do think I'll need it for something else. I'm going to add this alongside the tutorial I'm following and replace it later on with a CREATE handler that's useful to the application.
-app.post('/api/seats', (req, res) => {
-  const { error } = validateSeats(req.body);
-  if (error) {
-    res.status(400).send(error.details[0].message);
-    return;
-  }
-  const newSeat = {
-    id: req.body.id,
-    status: req.body.status,
-  };
-  seats.push(newSeat);
-  res.send(newSeat);
-});
-
+//CREATE Request Handlers
 app.post('/api/parties', (req, res) => {
   const { error } = validateParties(req.body);
   if (error) {
@@ -122,27 +102,13 @@ app.post('/api/parties', (req, res) => {
         : 'gateCheck',
     },
     checkInTime: new Date(),
-    readyToBoard: false,
+    status: 'checked-in',
   };
   parties.push(newParty);
   res.status(201).send(newParty);
 });
 
 //UPDATE Request Handlers
-// This one will be used by the app to move seats through the 4 statuses
-app.put('/api/seats/:id', (req, res) => {
-  const seat = seats.find((s) => s.id === req.params.id);
-  if (!seat) res.status(404).send(`Seat not found with id ${req.params.id}`);
-
-  const { error } = validateSeats(req.body);
-  if (error) {
-    res.status(400).send(error.details[0].message);
-    return;
-  }
-
-  seat.status = req.body.status;
-  res.send(seat);
-});
 
 //Airline UI tells Server when to start the boarding process
 app.put('/api/boardingStart', (req, res) => {
@@ -164,30 +130,15 @@ app.put('/api/seated/:partyID', (req, res) => {
     res.status(404).send(`Party with id ${req.paramss.partyID} not found.`);
     return;
   }
-  party.seats.forEach((partySeat) => {
-    const seat = seats.find((seatsSeat) => partySeat === seatsSeat.id);
-    seat.status = 'seated';
-  });
+  party.status = 'seated';
   res.send();
 });
 
 //DELETE Request Handler
-// Not sure I will need this one in the application, but I'm going to implement it to delete a seat just for learning purposes.
-app.delete('/api/seats/:id', (req, res) => {
-  const seatIndex = seats.findIndex((s) => s.id === req.params.id);
-  if (!seatIndex)
-    res.status(404).send(`Seat not found with id ${req.params.id}`);
-
-  const [seat] = seats.splice(seatIndex, 1);
-  res.send(seat);
-});
 
 function validateSeats(seat) {
   const schema = Joi.object({
     id: Joi.string().pattern(new RegExp('[0-9]{1,2}[A-Z]')).required(),
-    status: Joi.string()
-      .valid('not-checked in', 'checked-in', 'boarding', 'seated')
-      .required(),
   });
   return schema.validate(seat);
 }
@@ -224,9 +175,7 @@ function board() {
   //Yep!
   //So, given that the array is already sorted by checkInTime, I should just need to set the first party object to be ready to board (object at index 0)
 
-  //parties[0].readyToBoard = true;
-  //console.log(parties[0]);
   if (parties[0]) {
-    parties[0].readyToBoard = true;
+    parties[0].status = 'boarding';
   }
 }
