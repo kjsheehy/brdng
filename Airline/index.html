@@ -15,14 +15,18 @@
   <body>
     <div id="left" class="container">
       <div id="plane-select-container" class="container">
-        <label for="plane-select" class="label">Plane Model</label>
-        <select name="plane-select" id="plane-select">
-          <option value="747">Boeing 747</option>
-          <option value="737">Boeing 737</option>
+        <label for="flight-select" class="label">Flight #</label>
+        <select name="flight-select" id="flight-select">
+          <option selected disabled>-</option>
+          <option value="FA227">FA 227</option>
+          <option value="FA863">FA 863</option>
+          <option value="FA986">FA 986</option>
         </select>
       </div>
       <div id="boarding-button-container" class="container">
-        <button type="button" id="boarding-button">Start Boarding</button>
+        <button type="button" id="boarding-button" disabled>
+          Start Boarding
+        </button>
       </div>
       <div id="boarding-time-container" class="container">
         <div id="elapsed-boarding-time-label" class="label">

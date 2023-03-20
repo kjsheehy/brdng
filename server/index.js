@@ -30,7 +30,6 @@ const flights = [
       gateCheck: 0,
       capacity: 50,
     },
-    seats: populateSeats(rows, columns),
     parties: [],
   },
   {
@@ -42,7 +41,6 @@ const flights = [
       gateCheck: 0,
       capacity: 50,
     },
-    seats: populateSeats(rows, columns),
     parties: [],
   },
   {
@@ -53,40 +51,12 @@ const flights = [
       overhead: 0,
       gateCheck: 0,
       capacity: 50,
-      seats: populateSeats(rows, columns),
-      parties: [],
     },
+    parties: [],
   },
 ];
 
-function populateSeats(rows, columns) {
-  const seats = [];
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < columns.length; j++) {
-      let newSeat = {
-        id: i + 1 + columns[j],
-      };
-      seats.push(newSeat);
-    }
-  }
-  return seats;
-}
-
-populateSeats(rows, columns);
-
 //READ request handlers
-app.get('/api/seats/:flightID', (req, res) => {
-  const flight = findFlight(req.params.flightID);
-  res.send(flight.seats);
-});
-
-// app.get('/api/seats/:flightID/:id', (req, res) => {
-//   const seat = findFlight(req.params.flightID).seats.find(
-//     (s) => s.id === req.params.id
-//   );
-//   if (!seat) res.status(404).send(`Seat not found with id '${req.params.id}'.`);
-//   res.send(seat);
-// });
 
 app.get('/api/parties/:flightID', (req, res) => {
   const flight = findFlight(req.params.flightID);
@@ -136,14 +106,14 @@ app.post('/api/parties/:flightID', (req, res) => {
 //UPDATE Request Handlers
 
 //Airline UI tells Server when to start the boarding process
-app.put('/api/boardingStart', (req, res) => {
-  const flight = flights.find((f) => f.flightID === req.body.flightID);
+app.put('/api/boardingStart/:flightID', (req, res) => {
+  const flight = flights.find((f) => f.flightID === req.params.flightID);
   if (!flight) {
-    res.status(404).send(`Flight with ID ${req.body.flightID} not found`);
+    res.status(404).send(`Flight with ID ${req.params.flightID} not found`);
     return;
   }
   flight.boardingStart = new Date();
-  board(flight);
+  board(req.params.flightID);
   res.send(flight);
 });
 
@@ -153,19 +123,12 @@ app.put('/api/seated/:flightID/:partyID', (req, res) => {
   const party = flight.parties.find((p) => p.id === req.params.partyID);
   console.log('party: ', party);
   if (!party) {
-    res.status(404).send(`Party with id ${req.paramss.partyID} not found.`);
+    res.status(404).send(`Party with id ${req.params.partyID} not found.`);
     return;
   }
   party.status = 'seated';
   res.send();
 });
-
-function validateSeats(seat) {
-  const schema = Joi.object({
-    id: Joi.string().pattern(new RegExp('[0-9]{1,2}[A-Z]')).required(),
-  });
-  return schema.validate(seat);
-}
 
 function validateParties(party) {
   const schema = Joi.object({
@@ -192,13 +155,9 @@ function trackBaggageCapacity(flightID, numBags) {
   }
 }
 
-function board(flight) {
-  //For starters, let's just tell the first party to board. (Rather, let's indicate in the first party's object that it is ready to board.)
-  // How can I do that?
-  // How about sorting the parties array by checkInTime?
-  // But won't the parties array already be sorted by checkInTime because I added each party to the array when the party checked in?
-  //Yep!
-  //So, given that the array is already sorted by checkInTime, I should just need to set the first party object to be ready to board (object at index 0)
+function board(flightID) {
+  //For starters, let's just tell the first party to board. (Rather, let's indicate in the first party's object that it is ready to board.
+  const flight = findFlight(flightID);
   if (flight.parties[0]) {
     flight.parties[0].status = 'boarding';
   }

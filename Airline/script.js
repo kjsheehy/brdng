@@ -1,5 +1,6 @@
 'use strict';
 
+const flightSelect = document.getElementById('flight-select');
 const startBoardingButton = document.getElementById('boarding-button');
 const elapsedTimeEl = document.getElementById('elapsed-boarding-time');
 let startTime;
@@ -10,11 +11,18 @@ const gateCheckEl = document.getElementById('gate-check');
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
 const baggageCapacity = 50;
-const flightID = 'FA227';
+let flightID;
 
 populateSeatMap(rows, seats);
 overheadEl.textContent = `0 / ${baggageCapacity}`;
-setInterval(updateInfo, 5000);
+
+flightSelect.onchange = function () {
+  flightID = flightSelect.value;
+  console.log(flightID);
+  startBoardingButton.disabled = false;
+  flightSelect.disabled = true;
+  setInterval(updateInfo, 5000);
+};
 
 function updateInfo() {
   fetch(`http://localhost:5001/api/parties/${flightID}`)
@@ -47,12 +55,8 @@ function updateInfo() {
 }
 
 const startBoarding = function () {
-  fetch('http://localhost:5001/api/boardingStart', {
+  fetch(`http://localhost:5001/api/boardingStart/${flightID}`, {
     method: 'PUT',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      flightID,
-    }),
   })
     .then((res) => {
       if (!res.ok) throw new Error('Something went wrong');
@@ -63,7 +67,7 @@ const startBoarding = function () {
       setInterval(updateTime, 1000);
       startBoardingButton.disabled = true;
     })
-    .catch((error) => console.log(errr));
+    .catch((error) => console.log(error));
 };
 
 function updateTime() {
