@@ -17,32 +17,50 @@ app.use(
 
 const rows = 20;
 const columns = ['A', 'B', 'C', 'D', 'E'];
-const seats = [];
-const parties = [];
-const baggage = {
-  overhead: 0,
-  gateCheck: 0,
-  capacity: 50,
-};
+// const seats = [];
+// const parties = [];
+
 const flights = [
   {
     flightID: 'FA227',
     flightTime: new Date('2023-12-17T03:24:00'),
     boardingStart: undefined,
+    baggage: {
+      overhead: 0,
+      gateCheck: 0,
+      capacity: 50,
+    },
+    seats: populateSeats(rows, columns),
+    parties: [],
   },
   {
     flightID: 'FA863',
     flightTime: new Date('2023-12-17T05:45:00'),
     boardingStart: undefined,
+    baggage: {
+      overhead: 0,
+      gateCheck: 0,
+      capacity: 50,
+    },
+    seats: populateSeats(rows, columns),
+    parties: [],
   },
   {
     flightID: 'FA986',
     flightTime: new Date('2023-12-17T012:30:00'),
     boardingStart: undefined,
+    baggage: {
+      overhead: 0,
+      gateCheck: 0,
+      capacity: 50,
+      seats: populateSeats(rows, columns),
+      parties: [],
+    },
   },
 ];
 
 function populateSeats(rows, columns) {
+  const seats = [];
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < columns.length; j++) {
       let newSeat = {
@@ -51,28 +69,33 @@ function populateSeats(rows, columns) {
       seats.push(newSeat);
     }
   }
+  return seats;
 }
 
 populateSeats(rows, columns);
 
 //READ request handlers
-app.get('/api/seats', (req, res) => {
-  res.send(seats);
+app.get('/api/seats/:flightID', (req, res) => {
+  const flight = findFlight(req.params.flightID);
+  res.send(flight.seats);
 });
 
-app.get('/api/seats/:id', (req, res) => {
-  const seat = seats.find((s) => s.id === req.params.id);
-  if (!seat) res.status(404).send(`Seat not found with id '${req.params.id}'.`);
-  res.send(seat);
+// app.get('/api/seats/:flightID/:id', (req, res) => {
+//   const seat = findFlight(req.params.flightID).seats.find(
+//     (s) => s.id === req.params.id
+//   );
+//   if (!seat) res.status(404).send(`Seat not found with id '${req.params.id}'.`);
+//   res.send(seat);
+// });
+
+app.get('/api/parties/:flightID', (req, res) => {
+  const flight = findFlight(req.params.flightID);
+  res.send(flight.parties);
 });
 
-app.get('/api/parties', (req, res) => {
-  res.send(parties);
-});
-
-app.get('/api/boardingStatus/:id', (req, res) => {
-  let party = parties.find((p) => p.id === req.params.id);
-  console.log(party);
+app.get('/api/boardingStatus/:flightID/:id', (req, res) => {
+  const flight = findFlight(req.params.flightID);
+  const party = flight.parties.find((p) => p.id === req.params.id);
   if (!party)
     res
       .status(404)
@@ -80,31 +103,33 @@ app.get('/api/boardingStatus/:id', (req, res) => {
   res.send(JSON.stringify(party.status));
 });
 
-app.get('/api/baggage', (req, res) => {
-  res.send(baggage);
+app.get('/api/baggage/:flightID', (req, res) => {
+  const flight = findFlight(req.params.flightID);
+  res.send(flight.baggage);
 });
 
 //CREATE Request Handlers
-app.post('/api/parties', (req, res) => {
+app.post('/api/parties/:flightID', (req, res) => {
   const { error } = validateParties(req.body);
   if (error) {
     res.status(400).send(error.details[0].message);
     return;
   }
+  const flight = findFlight(req.params.flightID);
   const newParty = {
     id: req.body.seats[0],
     flightID: req.body.flightID,
     seats: req.body.seats,
     bags: {
       number: req.body.bags.number,
-      location: trackBaggageCapacity(req.body.bags.number)
+      location: trackBaggageCapacity(req.params.flightID, req.body.bags.number)
         ? 'overhead'
         : 'gateCheck',
     },
     checkInTime: new Date(),
     status: 'checked-in',
   };
-  parties.push(newParty);
+  flight.parties.push(newParty);
   res.status(201).send(newParty);
 });
 
@@ -123,8 +148,9 @@ app.put('/api/boardingStart', (req, res) => {
 });
 
 //Passenger UI tells Server when party is seated
-app.put('/api/seated/:partyID', (req, res) => {
-  const party = parties.find((p) => p.id === req.params.partyID);
+app.put('/api/seated/:flightID/:partyID', (req, res) => {
+  const flight = findFlight(req.params.flightID);
+  const party = flight.parties.find((p) => p.id === req.params.partyID);
   console.log('party: ', party);
   if (!party) {
     res.status(404).send(`Party with id ${req.paramss.partyID} not found.`);
@@ -133,8 +159,6 @@ app.put('/api/seated/:partyID', (req, res) => {
   party.status = 'seated';
   res.send();
 });
-
-//DELETE Request Handler
 
 function validateSeats(seat) {
   const schema = Joi.object({
@@ -157,25 +181,29 @@ function validateParties(party) {
   return schema.validate(party);
 }
 
-function trackBaggageCapacity(numBags) {
-  if (numBags + baggage.overhead <= baggage.capacity) {
-    baggage.overhead += numBags;
+function trackBaggageCapacity(flightID, numBags) {
+  const flight = findFlight(flightID);
+  if (numBags + flight.baggage.overhead <= flight.baggage.capacity) {
+    flight.baggage.overhead += numBags;
     return true;
   } else {
-    baggage.gateCheck += numBags;
+    flight.baggage.gateCheck += numBags;
     return false;
   }
 }
 
-function board() {
+function board(flight) {
   //For starters, let's just tell the first party to board. (Rather, let's indicate in the first party's object that it is ready to board.)
   // How can I do that?
   // How about sorting the parties array by checkInTime?
   // But won't the parties array already be sorted by checkInTime because I added each party to the array when the party checked in?
   //Yep!
   //So, given that the array is already sorted by checkInTime, I should just need to set the first party object to be ready to board (object at index 0)
-
-  if (parties[0]) {
-    parties[0].status = 'boarding';
+  if (flight.parties[0]) {
+    flight.parties[0].status = 'boarding';
   }
+}
+
+function findFlight(flightID) {
+  return flights.find((f) => f.flightID === flightID);
 }

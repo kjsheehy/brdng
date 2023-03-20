@@ -17,7 +17,7 @@ overheadEl.textContent = `0 / ${baggageCapacity}`;
 setInterval(updateInfo, 5000);
 
 function updateInfo() {
-  fetch('http://localhost:5001/api/parties')
+  fetch(`http://localhost:5001/api/parties/${flightID}`)
     .then((res) => res.json())
     .then((parties) => {
       parties.forEach((party) => {
@@ -33,7 +33,7 @@ function updateInfo() {
         });
       });
     });
-  fetch('http://localhost:5001/api/baggage')
+  fetch(`http://localhost:5001/api/baggage/${flightID}`)
     .then((res) => {
       if (!res.ok)
         throw new Error('Error fetching baggage info from the server');

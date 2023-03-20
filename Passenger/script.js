@@ -56,7 +56,7 @@ submitSeatsButton.onclick = function () {
   for (let el of selectedSeatEls) {
     selectedSeats.push(el.id);
   }
-  fetch('http://localhost:5001/api/parties', {
+  fetch(`http://localhost:5001/api/parties/${flightID}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
@@ -88,7 +88,7 @@ submitSeatsButton.onclick = function () {
 };
 
 seatedButton.onclick = function () {
-  fetch(`http://localhost:5001/api/seated/${partyID}`, {
+  fetch(`http://localhost:5001/api/seated/${flightID}/${partyID}`, {
     method: 'PUT',
   }).then((res) => {
     messageEl.innerText = res.ok
@@ -99,7 +99,7 @@ seatedButton.onclick = function () {
 };
 
 function checkBoardingStatus() {
-  fetch(`http://localhost:5001/api/boardingStatus/${partyID}`)
+  fetch(`http://localhost:5001/api/boardingStatus/${flightID}/${partyID}`)
     .then((res) => res.json())
     .then((status) => {
       if (status === 'boarding') {
