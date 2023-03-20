@@ -18,7 +18,6 @@ overheadEl.textContent = `0 / ${baggageCapacity}`;
 
 flightSelect.onchange = function () {
   flightID = flightSelect.value;
-  console.log(flightID);
   startBoardingButton.disabled = false;
   flightSelect.disabled = true;
   setInterval(updateInfo, 5000);

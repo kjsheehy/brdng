@@ -6,11 +6,12 @@ const seatMap = document.getElementById('seat-map');
 const submitSeatsButton = document.getElementById('submit-seats');
 const bagsDropdown = document.getElementById('number-bags');
 const seatedButton = document.getElementById('seated');
+const flightSelect = document.getElementById('flight-select');
 
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
-const flightID = 'FA227';
-let partyID = undefined;
+let flightID;
+let partyID;
 let intervalID;
 
 for (let i = 0; i < rows; i++) {
@@ -51,11 +52,13 @@ function updateBagsDropdown() {
 }
 
 submitSeatsButton.onclick = function () {
+  flightID = flightSelect.value;
   let selectedSeatEls = document.getElementsByClassName('selected-seat');
   let selectedSeats = [];
   for (let el of selectedSeatEls) {
     selectedSeats.push(el.id);
   }
+  if (flightID === '' || selectedSeats.length === 0) return;
   fetch(`http://localhost:5001/api/parties/${flightID}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
