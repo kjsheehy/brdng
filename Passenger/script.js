@@ -14,24 +14,42 @@ let flightID;
 let partyID;
 let intervalID;
 
-for (let i = 0; i < rows; i++) {
-  const newRow = document.createElement('div');
-  newRow.setAttribute('class', 'seat-row');
-  newRow.setAttribute('id', `row${i + 1}`);
+populateSeatMap();
+populateFlightSelect();
 
-  for (let j = 0; j < seats.length; j++) {
-    let seatButton = document.createElement('button');
-    seatButton.setAttribute('class', 'seat-button');
-    seatButton.setAttribute('id', i + 1 + seats[j]);
-    let seatID = document.createTextNode(i + 1 + seats[j]);
-    seatButton.appendChild(seatID);
-    seatButton.onclick = function () {
-      this.classList.toggle('selected-seat');
-      updateBagsDropdown();
-    };
-    newRow.appendChild(seatButton);
+function populateFlightSelect() {
+  fetch('http://localhost:5001/api/flightIDs')
+    .then((res) => res.json())
+    .then((flightIDs) => {
+      flightIDs.forEach((id) => {
+        let flightOption = document.createElement('option');
+        flightOption.setAttribute('value', id);
+        flightOption.innerText = id;
+        flightSelect.appendChild(flightOption);
+      });
+    });
+}
+
+function populateSeatMap() {
+  for (let i = 0; i < rows; i++) {
+    const newRow = document.createElement('div');
+    newRow.setAttribute('class', 'seat-row');
+    newRow.setAttribute('id', `row${i + 1}`);
+
+    for (let j = 0; j < seats.length; j++) {
+      let seatButton = document.createElement('button');
+      seatButton.setAttribute('class', 'seat-button');
+      seatButton.setAttribute('id', i + 1 + seats[j]);
+      let seatID = document.createTextNode(i + 1 + seats[j]);
+      seatButton.appendChild(seatID);
+      seatButton.onclick = function () {
+        this.classList.toggle('selected-seat');
+        updateBagsDropdown();
+      };
+      newRow.appendChild(seatButton);
+    }
+    seatMap.appendChild(newRow);
   }
-  seatMap.appendChild(newRow);
 }
 
 function updateBagsDropdown() {
@@ -84,7 +102,7 @@ submitSeatsButton.onclick = function () {
         bagLocationMessage = ` There will not be space for your bags in the overhead compartments. Please take your bags to the counter now to gate check them. With one text, we can have your bags "disappeared", so don't give us any attitude.`;
       page1.classList.add('hidden');
       messageEl.classList.remove('hidden');
-      messageEl.innerText = `You've checked in seat(s) ${data.seats} with a total of ${data.bags.number} carry-on bags. We'll let you know here when your party can board.${bagLocationMessage}`;
+      messageEl.innerText = `You've checked in seat(s) ${data.seats} with a total of ${data.bags.number} carry-on bag(s). We'll let you know here when your party can board.${bagLocationMessage}`;
       intervalID = setInterval(checkBoardingStatus, 5000);
     })
     .catch((error) => console.log(error));

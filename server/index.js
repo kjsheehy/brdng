@@ -17,8 +17,6 @@ app.use(
 
 const rows = 20;
 const columns = ['A', 'B', 'C', 'D', 'E'];
-// const seats = [];
-// const parties = [];
 
 const flights = [
   {
@@ -57,6 +55,10 @@ const flights = [
 ];
 
 //READ request handlers
+app.get('/api/flightIDs', (req, res) => {
+  const flightIDs = flights.map((f) => f.flightID);
+  res.send(flightIDs);
+});
 
 app.get('/api/parties/:flightID', (req, res) => {
   const flight = findFlight(req.params.flightID);
@@ -92,9 +94,7 @@ app.post('/api/parties/:flightID', (req, res) => {
     seats: req.body.seats,
     bags: {
       number: req.body.bags.number,
-      location: trackBaggageCapacity(req.params.flightID, req.body.bags.number)
-        ? 'overhead'
-        : 'gateCheck',
+      location: trackBaggageCapacity(req.params.flightID, req.body.bags.number),
     },
     checkInTime: new Date(),
     status: 'checked-in',
@@ -121,7 +121,6 @@ app.put('/api/boardingStart/:flightID', (req, res) => {
 app.put('/api/seated/:flightID/:partyID', (req, res) => {
   const flight = findFlight(req.params.flightID);
   const party = flight.parties.find((p) => p.id === req.params.partyID);
-  console.log('party: ', party);
   if (!party) {
     res.status(404).send(`Party with id ${req.params.partyID} not found.`);
     return;
@@ -138,7 +137,7 @@ function validateParties(party) {
       .required(),
     bags: Joi.object({
       number: Joi.number().required(),
-      location: Joi.string().valid('overhead', 'gateCheck'),
+      location: Joi.string().valid('overhead', 'gateCheck', 'N/A'),
     }),
   });
   return schema.validate(party);
@@ -146,12 +145,13 @@ function validateParties(party) {
 
 function trackBaggageCapacity(flightID, numBags) {
   const flight = findFlight(flightID);
-  if (numBags + flight.baggage.overhead <= flight.baggage.capacity) {
+  if (numBags == 0) return 'N/A';
+  else if (numBags + flight.baggage.overhead <= flight.baggage.capacity) {
     flight.baggage.overhead += numBags;
-    return true;
+    return 'overhead';
   } else {
     flight.baggage.gateCheck += numBags;
-    return false;
+    return 'gateCheck';
   }
 }
 

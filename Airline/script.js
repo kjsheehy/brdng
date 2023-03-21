@@ -16,6 +16,21 @@ let flightID;
 populateSeatMap(rows, seats);
 overheadEl.textContent = `0 / ${baggageCapacity}`;
 
+populateFlightSelect();
+
+function populateFlightSelect() {
+  fetch('http://localhost:5001/api/flightIDs')
+    .then((res) => res.json())
+    .then((flightIDs) => {
+      flightIDs.forEach((id) => {
+        let flightOption = document.createElement('option');
+        flightOption.setAttribute('value', id);
+        flightOption.innerText = id;
+        flightSelect.appendChild(flightOption);
+      });
+    });
+}
+
 flightSelect.onchange = function () {
   flightID = flightSelect.value;
   startBoardingButton.disabled = false;
