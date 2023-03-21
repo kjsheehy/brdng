@@ -2,6 +2,10 @@
 
 const flightSelect = document.getElementById('flight-select');
 const startBoardingButton = document.getElementById('boarding-button');
+const closeBoardingButton = document.getElementById('close-boarding-button');
+const elapsedBoardingTimeLabelEl = document.getElementById(
+  'elapsed-boarding-time-label'
+);
 const elapsedTimeEl = document.getElementById('elapsed-boarding-time');
 let startTime;
 const seatMap = document.getElementById('seat-map');
@@ -12,6 +16,7 @@ const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
 const baggageCapacity = 50;
 let flightID;
+let timerIntervalID;
 
 populateSeatMap(rows, seats);
 overheadEl.textContent = `0 / ${baggageCapacity}`;
@@ -78,11 +83,30 @@ const startBoarding = function () {
     })
     .then((data) => {
       startTime = new Date();
-      setInterval(updateTime, 1000);
+      timerIntervalID = setInterval(updateTime, 1000);
       startBoardingButton.disabled = true;
+      closeBoardingButton.disabled = false;
     })
     .catch((error) => console.log(error));
 };
+
+function closeBoarding() {
+  fetch(`http://localhost:5001/api/boardingClose/${flightID}`, {
+    method: 'PUT',
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error('Something went wrong');
+      return res.json();
+    })
+    .then((data) => {
+      console.log(data);
+      closeBoardingButton.disabled = true;
+      clearInterval(timerIntervalID);
+      elapsedBoardingTimeLabelEl.textContent = 'Total Boarding Time';
+      elapsedTimeEl.textContent = msToHMS(data.boardingTime);
+    })
+    .catch((error) => console.log(error));
+}
 
 function updateTime() {
   let elapsedTime = Date.now() - startTime;
@@ -103,6 +127,7 @@ function msToHMS(ms) {
 }
 
 startBoardingButton.onclick = startBoarding;
+closeBoardingButton.onclick = closeBoarding;
 
 function populateSeatMap(rows, seats) {
   for (let i = 0; i < rows; i++) {

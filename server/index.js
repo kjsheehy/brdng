@@ -117,6 +117,17 @@ app.put('/api/boardingStart/:flightID', (req, res) => {
   res.send(flight);
 });
 
+app.put('/api/boardingClose/:flightID', (req, res) => {
+  const flight = flights.find((f) => f.flightID === req.params.flightID);
+  if (!flight) {
+    res.status(404).send(`Flight with ID ${req.params.flightID} not found`);
+    return;
+  }
+  flight.boardingClose = new Date();
+  flight.boardingTime = flight.boardingClose - flight.boardingStart;
+  res.send(flight);
+});
+
 //Passenger UI tells Server when party is seated
 app.put('/api/seated/:flightID/:partyID', (req, res) => {
   const flight = findFlight(req.params.flightID);
