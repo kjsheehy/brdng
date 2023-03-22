@@ -99,7 +99,6 @@ function closeBoarding() {
       return res.json();
     })
     .then((data) => {
-      console.log(data);
       closeBoardingButton.disabled = true;
       clearInterval(timerIntervalID);
       elapsedBoardingTimeLabelEl.textContent = 'Total Boarding Time';

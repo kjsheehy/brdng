@@ -54,6 +54,88 @@ const flights = [
   },
 ];
 
+//Create some test data
+const fa986 = findFlight('FA986');
+fa986.parties = [
+  {
+    id: '1A',
+    flightID: 'FA986',
+    seats: ['1A', '1B', '1C', '1D', '1E'],
+    bags: {
+      number: 3,
+      location: trackBaggageCapacity('FA986', 3),
+    },
+    checkInTime: new Date(),
+    status: 'checked-in',
+  },
+  {
+    id: '18C',
+    flightID: 'FA986',
+    seats: ['18C', '18D', '18E'],
+    bags: {
+      number: 0,
+      location: trackBaggageCapacity('FA986', 0),
+    },
+    checkInTime: new Date(),
+    status: 'checked-in',
+  },
+  {
+    id: '12B',
+    flightID: 'FA986',
+    seats: ['12B', '12C', '12D', '12E'],
+    bags: {
+      number: 4,
+      location: trackBaggageCapacity('FA986', 4),
+    },
+    checkInTime: new Date(),
+    status: 'checked-in',
+  },
+  {
+    id: '5A',
+    flightID: 'FA986',
+    seats: ['5A', '5B', '5C', '5D', '5E'],
+    bags: {
+      number: 3,
+      location: trackBaggageCapacity('FA986', 3),
+    },
+    checkInTime: new Date(),
+    status: 'boarding',
+  },
+  {
+    id: '19A',
+    flightID: 'FA986',
+    seats: ['19A', '19B', '19C', '20A', '20B', '20C', '20D', '20E'],
+    bags: {
+      number: 5,
+      location: trackBaggageCapacity('FA986', 5),
+    },
+    checkInTime: new Date(),
+    status: 'checked-in',
+  },
+  {
+    id: '16A',
+    flightID: 'FA986',
+    seats: ['16A'],
+    bags: {
+      number: 1,
+      location: trackBaggageCapacity('FA986', 1),
+    },
+    checkInTime: new Date(),
+    status: 'checked-in',
+  },
+  {
+    id: '13E',
+    flightID: 'FA986',
+    seats: ['13A', '13B', '13C', '13D', '13E', '14C', '14D', '14E'],
+    bags: {
+      number: 4,
+      location: trackBaggageCapacity('FA986', 4),
+    },
+    checkInTime: new Date(),
+    status: 'checked-in',
+  },
+];
+
 //READ request handlers
 app.get('/api/flightIDs', (req, res) => {
   const flightIDs = flights.map((f) => f.flightID);
@@ -142,6 +224,7 @@ app.put('/api/seated/:flightID/:partyID', (req, res) => {
 
 function validateParties(party) {
   const schema = Joi.object({
+    id: Joi.string().required().unique(),
     flightID: Joi.string().required(),
     seats: Joi.array()
       .items(Joi.string().pattern(new RegExp('[0-9]{1,2}[A-Z]')))
@@ -168,9 +251,22 @@ function trackBaggageCapacity(flightID, numBags) {
 
 function board(flightID) {
   //For starters, let's just tell the first party to board. (Rather, let's indicate in the first party's object that it is ready to board.
+  //Alright, now it's time to make this more robust. Make this clear for boarding the number of parties that add up to 10 (or more if a party pushes it over the line).
+  //Still first come, first served, so the existing array order is good.
   const flight = findFlight(flightID);
-  if (flight.parties[0]) {
-    flight.parties[0].status = 'boarding';
+  let numPassengersBoarding = flight.parties.reduce((accum, party) => {
+    return party.status === 'boarding' ? accum + party.seats.length : accum;
+  }, 0);
+  const checkedInParties = flight.parties.filter(
+    (party) => party.status === 'checked-in'
+  );
+
+  if (numPassengersBoarding < 10) {
+    checkedInParties.some((party) => {
+      party.status = 'boarding';
+      numPassengersBoarding += party.seats.length;
+      return numPassengersBoarding >= 10;
+    });
   }
 }
 
