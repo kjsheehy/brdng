@@ -31,6 +31,26 @@ function populateFlightSelect() {
     });
 }
 
+flightSelect.onchange = function () {
+  flightSelect.disabled = true;
+  flightID = flightSelect.value;
+  const seatButtons = document.getElementsByClassName('seat-button');
+  for (let i = 0; i < seatButtons.length; i++) {
+    seatButtons[i].disabled = false;
+  }
+  //fetch parties for the selected flight and only enable the buttons for seats not represented in the parties
+  fetch(`http://localhost:5001/api/parties/${flightID}`)
+    .then((res) => res.json())
+    .then((parties) => {
+      parties.forEach((party) => {
+        party.seats.forEach((seat) => {
+          let seatButton = document.getElementById(seat);
+          seatButton.disabled = true;
+        });
+      });
+    });
+};
+
 function populateSeatMap() {
   for (let i = 0; i < rows; i++) {
     const newRow = document.createElement('div');
@@ -47,6 +67,7 @@ function populateSeatMap() {
         this.classList.toggle('selected-seat');
         updateBagsDropdown();
       };
+      seatButton.disabled = true;
       newRow.appendChild(seatButton);
     }
     seatMap.appendChild(newRow);
@@ -71,7 +92,6 @@ function updateBagsDropdown() {
 }
 
 submitSeatsButton.onclick = function () {
-  flightID = flightSelect.value;
   let selectedSeatEls = document.getElementsByClassName('selected-seat');
   let selectedSeats = [];
   for (let el of selectedSeatEls) {
