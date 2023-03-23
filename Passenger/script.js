@@ -7,6 +7,7 @@ const submitSeatsButton = document.getElementById('submit-seats');
 const bagsDropdown = document.getElementById('number-bags');
 const seatedButton = document.getElementById('seated');
 const flightSelect = document.getElementById('flight-select');
+const bodyEl = document.getElementsByTagName('body')[0];
 
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
@@ -124,7 +125,12 @@ function checkBoardingStatus() {
     .then((res) => res.json())
     .then((status) => {
       if (status === 'boarding') {
-        messageEl.innerText = 'Your party may now board.';
+        const boardMessageEl = document.createElement('div');
+        const boardMessageText = document.createTextNode(
+          'Your party may now board.'
+        );
+        boardMessageEl.appendChild(boardMessageText);
+        bodyEl.insertBefore(boardMessageEl, seatedButton);
         seatedButton.classList.remove('hidden');
         clearInterval(intervalID);
       }

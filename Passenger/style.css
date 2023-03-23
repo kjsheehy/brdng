@@ -57,3 +57,7 @@ body: {
   background-color: green;
   color: white;
 }
+
+#message {
+  margin-bottom: 2em;
+}

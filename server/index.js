@@ -23,6 +23,7 @@ const flights = [
     flightID: 'FA227',
     flightTime: new Date('2023-12-17T03:24:00'),
     boardingStart: undefined,
+    boarding: false,
     baggage: {
       overhead: 0,
       gateCheck: 0,
@@ -34,6 +35,7 @@ const flights = [
     flightID: 'FA863',
     flightTime: new Date('2023-12-17T05:45:00'),
     boardingStart: undefined,
+    boarding: false,
     baggage: {
       overhead: 0,
       gateCheck: 0,
@@ -45,6 +47,7 @@ const flights = [
     flightID: 'FA986',
     flightTime: new Date('2023-12-17T012:30:00'),
     boardingStart: undefined,
+    boarding: false,
     baggage: {
       overhead: 0,
       gateCheck: 0,
@@ -99,7 +102,7 @@ fa986.parties = [
       location: trackBaggageCapacity('FA986', 3),
     },
     checkInTime: new Date(),
-    status: 'boarding',
+    status: 'checked-in',
   },
   {
     id: '19A',
@@ -182,6 +185,7 @@ app.post('/api/parties/:flightID', (req, res) => {
     status: 'checked-in',
   };
   flight.parties.push(newParty);
+  if (flight.boarding) board(req.params.flightID);
   res.status(201).send(newParty);
 });
 
@@ -195,6 +199,7 @@ app.put('/api/boardingStart/:flightID', (req, res) => {
     return;
   }
   flight.boardingStart = new Date();
+  flight.boarding = true;
   board(req.params.flightID);
   res.send(flight);
 });
@@ -207,6 +212,7 @@ app.put('/api/boardingClose/:flightID', (req, res) => {
   }
   flight.boardingClose = new Date();
   flight.boardingTime = flight.boardingClose - flight.boardingStart;
+  flight.boarding = false;
   res.send(flight);
 });
 
@@ -219,12 +225,13 @@ app.put('/api/seated/:flightID/:partyID', (req, res) => {
     return;
   }
   party.status = 'seated';
+  if (flight.boarding) board(req.params.flightID);
   res.send();
 });
 
 function validateParties(party) {
   const schema = Joi.object({
-    id: Joi.string().required().unique(),
+    id: Joi.string(),
     flightID: Joi.string().required(),
     seats: Joi.array()
       .items(Joi.string().pattern(new RegExp('[0-9]{1,2}[A-Z]')))
@@ -250,9 +257,6 @@ function trackBaggageCapacity(flightID, numBags) {
 }
 
 function board(flightID) {
-  //For starters, let's just tell the first party to board. (Rather, let's indicate in the first party's object that it is ready to board.
-  //Alright, now it's time to make this more robust. Make this clear for boarding the number of parties that add up to 10 (or more if a party pushes it over the line).
-  //Still first come, first served, so the existing array order is good.
   const flight = findFlight(flightID);
   let numPassengersBoarding = flight.parties.reduce((accum, party) => {
     return party.status === 'boarding' ? accum + party.seats.length : accum;
@@ -260,6 +264,7 @@ function board(flightID) {
   const checkedInParties = flight.parties.filter(
     (party) => party.status === 'checked-in'
   );
+  console.log(checkedInParties);
 
   if (numPassengersBoarding < 10) {
     checkedInParties.some((party) => {
