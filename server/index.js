@@ -48,7 +48,8 @@ const flights = [
     flightTime: new Date('2023-12-17T012:30:00'),
     boardingStart: undefined,
     boarding: false,
-    board: boardFirstComeFirstServed,
+    board,
+    boardingMethod: undefined,
     baggage: {
       overhead: 0,
       gateCheck: 0,
@@ -226,7 +227,7 @@ app.put('/api/seated/:flightID/:partyID', (req, res) => {
     return;
   }
   party.status = 'seated';
-  if (flight.boarding) board(req.params.flightID);
+  if (flight.boarding) flight.board();
   res.send();
 });
 
@@ -257,13 +258,15 @@ function trackBaggageCapacity(flightID, numBags) {
   }
 }
 
-function boardFirstComeFirstServed() {
+function board() {
   let numPassengersBoarding = this.parties.reduce((accum, party) => {
     return party.status === 'boarding' ? accum + party.seats.length : accum;
   }, 0);
   const checkedInParties = this.parties.filter(
     (party) => party.status === 'checked-in'
   );
+  checkedInParties.sort(this.boardingMethod);
+  console.log(checkedInParties);
   if (numPassengersBoarding < 10) {
     checkedInParties.some((party) => {
       party.status = 'boarding';
@@ -275,4 +278,8 @@ function boardFirstComeFirstServed() {
 
 function findFlight(flightID) {
   return flights.find((f) => f.flightID === flightID);
+}
+
+function frontToBack(a, b) {
+  return a.id.slice(0, -1) - b.id.slice(0, -1);
 }
