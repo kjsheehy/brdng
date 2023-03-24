@@ -49,7 +49,7 @@ const flights = [
     boardingStart: undefined,
     boarding: false,
     board,
-    boardingMethod: undefined,
+    boardingMethod: backToFront,
     baggage: {
       overhead: 0,
       gateCheck: 0,
@@ -282,4 +282,8 @@ function findFlight(flightID) {
 
 function frontToBack(a, b) {
   return a.id.slice(0, -1) - b.id.slice(0, -1);
+}
+
+function backToFront(a, b) {
+  return b.id.slice(0, -1) - a.id.slice(0, -1);
 }
