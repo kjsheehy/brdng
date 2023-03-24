@@ -18,12 +18,29 @@ app.use(
 const rows = 20;
 const columns = ['A', 'B', 'C', 'D', 'E'];
 
+const boardingMethods = [
+  {
+    name: 'First Come, First Served',
+    compareFunction: undefined,
+  },
+  {
+    name: 'Front to Back',
+    compareFunction: frontToBack,
+  },
+  {
+    name: 'Back to Front',
+    compareFunction: backToFront,
+  },
+];
+
 const flights = [
   {
     flightID: 'FA227',
     flightTime: new Date('2023-12-17T03:24:00'),
     boardingStart: undefined,
     boarding: false,
+    board,
+    boardingMethod: undefined,
     baggage: {
       overhead: 0,
       gateCheck: 0,
@@ -36,6 +53,8 @@ const flights = [
     flightTime: new Date('2023-12-17T05:45:00'),
     boardingStart: undefined,
     boarding: false,
+    board,
+    boardingMethod: undefined,
     baggage: {
       overhead: 0,
       gateCheck: 0,
@@ -49,7 +68,7 @@ const flights = [
     boardingStart: undefined,
     boarding: false,
     board,
-    boardingMethod: backToFront,
+    boardingMethod: undefined,
     baggage: {
       overhead: 0,
       gateCheck: 0,
@@ -147,6 +166,10 @@ app.get('/api/flightIDs', (req, res) => {
   res.send(flightIDs);
 });
 
+app.get('/api/boardingMethods', (req, res) => {
+  res.send(boardingMethods.map((method) => method.name));
+});
+
 app.get('/api/parties/:flightID', (req, res) => {
   const flight = findFlight(req.params.flightID);
   res.send(flight.parties);
@@ -194,14 +217,18 @@ app.post('/api/parties/:flightID', (req, res) => {
 //UPDATE Request Handlers
 
 //Airline UI tells Server when to start the boarding process
-app.put('/api/boardingStart/:flightID', (req, res) => {
-  const flight = flights.find((f) => f.flightID === req.params.flightID);
+app.put('/api/boardingStart', (req, res) => {
+  const flight = flights.find((f) => f.flightID === req.body.flightID);
+  const boardingMethod = boardingMethods.find(
+    (method) => method.name === req.body.boardingMethod
+  );
   if (!flight) {
-    res.status(404).send(`Flight with ID ${req.params.flightID} not found`);
+    res.status(404).send(`Flight with ID ${req.body.flightID} not found`);
     return;
   }
   flight.boardingStart = new Date();
   flight.boarding = true;
+  flight.boardingMethod = boardingMethod.compareFunction;
   flight.board();
   res.send(flight);
 });
@@ -266,7 +293,6 @@ function board() {
     (party) => party.status === 'checked-in'
   );
   checkedInParties.sort(this.boardingMethod);
-  console.log(checkedInParties);
   if (numPassengersBoarding < 10) {
     checkedInParties.some((party) => {
       party.status = 'boarding';

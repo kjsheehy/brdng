@@ -1,6 +1,7 @@
 'use strict';
 
 const flightSelect = document.getElementById('flight-select');
+const boardingMethodSelect = document.getElementById('boarding-method-select');
 const startBoardingButton = document.getElementById('boarding-button');
 const closeBoardingButton = document.getElementById('close-boarding-button');
 const elapsedBoardingTimeLabelEl = document.getElementById(
@@ -22,6 +23,7 @@ populateSeatMap(rows, seats);
 overheadEl.textContent = `0 / ${baggageCapacity}`;
 
 populateFlightSelect();
+populateBoardingMethods();
 
 function populateFlightSelect() {
   fetch('http://localhost:5001/api/flightIDs')
@@ -42,6 +44,19 @@ flightSelect.onchange = function () {
   flightSelect.disabled = true;
   setInterval(updateInfo, 5000);
 };
+
+function populateBoardingMethods() {
+  fetch('http://localhost:5001/api/boardingMethods')
+    .then((res) => res.json())
+    .then((methods) => {
+      methods.forEach((method) => {
+        let methodOption = document.createElement('option');
+        methodOption.setAttribute('value', method);
+        methodOption.innerText = method;
+        boardingMethodSelect.appendChild(methodOption);
+      });
+    });
+}
 
 function updateInfo() {
   fetch(`http://localhost:5001/api/parties/${flightID}`)
@@ -74,8 +89,15 @@ function updateInfo() {
 }
 
 const startBoarding = function () {
-  fetch(`http://localhost:5001/api/boardingStart/${flightID}`, {
+  fetch(`http://localhost:5001/api/boardingStart`, {
     method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      flightID,
+      boardingMethod: boardingMethodSelect.value,
+    }),
   })
     .then((res) => {
       if (!res.ok) throw new Error('Something went wrong');
@@ -86,6 +108,7 @@ const startBoarding = function () {
       timerIntervalID = setInterval(updateTime, 1000);
       startBoardingButton.disabled = true;
       closeBoardingButton.disabled = false;
+      boardingMethodSelect.disabled = true;
     })
     .catch((error) => console.log(error));
 };
