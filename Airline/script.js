@@ -42,7 +42,8 @@ flightSelect.onchange = function () {
   flightID = flightSelect.value;
   startBoardingButton.disabled = false;
   flightSelect.disabled = true;
-  setInterval(updateInfo, 5000);
+  updateInfo();
+  setInterval(updateInfo, 1000);
 };
 
 function populateBoardingMethods() {
@@ -109,6 +110,7 @@ const startBoarding = function () {
       startBoardingButton.disabled = true;
       closeBoardingButton.disabled = false;
       boardingMethodSelect.disabled = true;
+      updateInfo();
     })
     .catch((error) => console.log(error));
 };

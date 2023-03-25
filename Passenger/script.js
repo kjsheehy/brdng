@@ -7,7 +7,7 @@ const submitSeatsButton = document.getElementById('submit-seats');
 const bagsDropdown = document.getElementById('number-bags');
 const seatedButton = document.getElementById('seated');
 const flightSelect = document.getElementById('flight-select');
-const bodyEl = document.getElementsByTagName('body')[0];
+const boardMessageEl = document.getElementById('board-message');
 
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E'];
@@ -133,6 +133,7 @@ seatedButton.onclick = function () {
   fetch(`http://localhost:5001/api/seated/${flightID}/${partyID}`, {
     method: 'PUT',
   }).then((res) => {
+    boardMessageEl.classList.add('hidden');
     messageEl.innerText = res.ok
       ? 'Thank you for using brdng! Enjoy your flight!'
       : 'Something went wrong. Please use the back button and try again.';
@@ -145,12 +146,7 @@ function checkBoardingStatus() {
     .then((res) => res.json())
     .then((status) => {
       if (status === 'boarding') {
-        const boardMessageEl = document.createElement('div');
-        const boardMessageText = document.createTextNode(
-          'Your party may now board.'
-        );
-        boardMessageEl.appendChild(boardMessageText);
-        bodyEl.insertBefore(boardMessageEl, seatedButton);
+        boardMessageEl.classList.remove('hidden');
         seatedButton.classList.remove('hidden');
         clearInterval(intervalID);
       }

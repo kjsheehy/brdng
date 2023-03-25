@@ -160,6 +160,44 @@ fa986.parties = [
   },
 ];
 
+//more test data
+const fa863 = findFlight('FA863');
+fa863.parties = [
+  {
+    id: '1A',
+    flightID: 'FA986',
+    seats: ['1A', '1B', '1C', '1D', '1E', '2A', '2B', '2C', '2D', '2E'],
+    bags: {
+      number: 3,
+      location: trackBaggageCapacity('FA986', 3),
+    },
+    checkInTime: new Date(),
+    status: 'checked-in',
+  },
+  {
+    id: '19A',
+    flightID: 'FA986',
+    seats: [
+      '19A',
+      '19B',
+      '19C',
+      '19D',
+      '19E',
+      '20A',
+      '20B',
+      '20C',
+      '20D',
+      '20E',
+    ],
+    bags: {
+      number: 0,
+      location: trackBaggageCapacity('FA986', 0),
+    },
+    checkInTime: new Date(),
+    status: 'checked-in',
+  },
+];
+
 //READ request handlers
 app.get('/api/flightIDs', (req, res) => {
   const flightIDs = flights.map((f) => f.flightID);
