@@ -28,6 +28,18 @@
           name="boarding-method-select"
           id="boarding-method-select"
         ></select>
+        <label for="number-passengers" class="label"
+          ># Passengers at Once</label
+        >
+        <input
+          type="number"
+          step="10"
+          min="10"
+          max="100"
+          value="20"
+          name="number-passengers"
+          id="number-passengers"
+        />
       </div>
       <div id="boarding-button-container" class="container">
         <button type="button" id="boarding-button" disabled>
@@ -36,16 +48,10 @@
         <button type="button" id="close-boarding-button" disabled>
           Close Boarding
         </button>
-      </div>
-      <div id="boarding-time-container" class="container">
         <div id="elapsed-boarding-time-label" class="label">
           Elapsed Boarding Time
         </div>
         <div id="elapsed-boarding-time" class="value">00:00:00</div>
-        <div id="remaining-boarding-time-label" class="label">
-          Estimated Time Remaining
-        </div>
-        <div id="remaining-boarding-time" class="value">00:00:00</div>
       </div>
       <div id="baggage-container" class="container">
         <div class="label">Overhead Baggage</div>

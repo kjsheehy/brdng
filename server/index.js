@@ -267,6 +267,7 @@ app.put('/api/boardingStart', (req, res) => {
   flight.boardingStart = new Date();
   flight.boarding = true;
   flight.boardingMethod = boardingMethod.compareFunction;
+  flight.numberPassengersBoarding = req.body.numberPassengersBoarding;
   flight.board();
   res.send(flight);
 });
@@ -324,18 +325,18 @@ function trackBaggageCapacity(flightID, numBags) {
 }
 
 function board() {
-  let numPassengersBoarding = this.parties.reduce((accum, party) => {
+  let numPassengersCurrentlyBoarding = this.parties.reduce((accum, party) => {
     return party.status === 'boarding' ? accum + party.seats.length : accum;
   }, 0);
   const checkedInParties = this.parties.filter(
     (party) => party.status === 'checked-in'
   );
   checkedInParties.sort(this.boardingMethod);
-  if (numPassengersBoarding < 10) {
+  if (numPassengersCurrentlyBoarding < this.numberPassengersBoarding) {
     checkedInParties.some((party) => {
       party.status = 'boarding';
-      numPassengersBoarding += party.seats.length;
-      return numPassengersBoarding >= 10;
+      numPassengersCurrentlyBoarding += party.seats.length;
+      return numPassengersCurrentlyBoarding >= this.numberPassengersBoarding;
     });
   }
 }

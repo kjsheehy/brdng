@@ -2,6 +2,7 @@
 
 const flightSelect = document.getElementById('flight-select');
 const boardingMethodSelect = document.getElementById('boarding-method-select');
+const numberPassengersBoardingEl = document.getElementById('number-passengers');
 const startBoardingButton = document.getElementById('boarding-button');
 const closeBoardingButton = document.getElementById('close-boarding-button');
 const elapsedBoardingTimeLabelEl = document.getElementById(
@@ -98,6 +99,7 @@ const startBoarding = function () {
     body: JSON.stringify({
       flightID,
       boardingMethod: boardingMethodSelect.value,
+      numberPassengersBoarding: numberPassengersBoardingEl.value,
     }),
   })
     .then((res) => {
@@ -110,6 +112,7 @@ const startBoarding = function () {
       startBoardingButton.disabled = true;
       closeBoardingButton.disabled = false;
       boardingMethodSelect.disabled = true;
+      numberPassengersBoardingEl.disabled = true;
       updateInfo();
     })
     .catch((error) => console.log(error));
