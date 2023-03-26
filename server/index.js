@@ -31,6 +31,10 @@ const boardingMethods = [
     name: 'Back to Front',
     compareFunction: backToFront,
   },
+  {
+    name: 'Free for All',
+    compareFunction: undefined,
+  },
 ];
 
 const flights = [

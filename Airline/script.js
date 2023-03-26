@@ -91,6 +91,8 @@ function updateInfo() {
 }
 
 const startBoarding = function () {
+  if (boardingMethodSelect.value === 'Free for All')
+    numberPassengersBoardingEl.value = '100';
   fetch(`http://localhost:5001/api/boardingStart`, {
     method: 'PUT',
     headers: {
