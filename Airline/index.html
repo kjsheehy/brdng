@@ -20,44 +20,54 @@
           <option selected disabled>-</option>
         </select>
       </div>
-      <div id="boarding-method-container" class="container">
-        <label for="boarding-method-select" class="label"
-          >Boarding Method</label
-        >
-        <select
-          name="boarding-method-select"
-          id="boarding-method-select"
-        ></select>
-        <label for="number-passengers" class="label"
-          ># Passengers at Once</label
-        >
-        <input
-          type="number"
-          step="5"
-          min="10"
-          max="40"
-          value="20"
-          name="number-passengers"
-          id="number-passengers"
-        />
-      </div>
-      <div id="boarding-button-container" class="container">
-        <button type="button" id="boarding-button" disabled>
-          Start Boarding
-        </button>
-        <button type="button" id="close-boarding-button" disabled>
-          Close Boarding
-        </button>
-        <div id="elapsed-boarding-time-label" class="label">
-          Elapsed Boarding Time
+      <div id="boarding-container" class="container">
+        <div id="boarding-method-container" class="container">
+          <label for="boarding-method-select" class="label"
+            >Boarding Method</label
+          >
+          <select
+            name="boarding-method-select"
+            id="boarding-method-select"
+          ></select>
         </div>
-        <div id="elapsed-boarding-time" class="value">00:00:00</div>
+        <div id="number-passengers-container" class="container">
+          <label for="number-passengers" class="label"
+            ># Passengers at Once</label
+          >
+          <input
+            type="number"
+            step="5"
+            min="10"
+            max="40"
+            value="20"
+            name="number-passengers"
+            id="number-passengers"
+          />
+        </div>
+        <div id="boarding-button-container" class="container">
+          <button type="button" id="boarding-button" disabled>
+            Start Boarding
+          </button>
+          <button type="button" id="close-boarding-button" disabled>
+            Close Boarding
+          </button>
+        </div>
+        <div id="boarding-time-container" class="container">
+          <div id="elapsed-boarding-time-label" class="label">
+            Elapsed Boarding Time
+          </div>
+          <div id="elapsed-boarding-time" class="value">00:00:00</div>
+        </div>
       </div>
       <div id="baggage-container" class="container">
-        <div class="label">Overhead Baggage</div>
-        <div id="overhead" class="value">0 / 0</div>
-        <div class="label">Gate-check</div>
-        <div id="gate-check" class="value">0</div>
+        <div id="overhead-baggage-container" class="container">
+          <div class="label">Overhead Baggage</div>
+          <div id="overhead" class="value">0 / 0</div>
+        </div>
+        <div id="overhead-baggage-container" class="container">
+          <div class="label">Gate-check</div>
+          <div id="gate-check" class="value">0</div>
+        </div>
       </div>
     </div>
     <div id="right" class="container">
