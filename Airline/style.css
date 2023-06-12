@@ -13,6 +13,24 @@ body {
   align-items: center;
 }
 
+input {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+button {
+  width: 7rem;
+  margin: 5px;
+}
+
+input,
+select,
+button {
+  border-width: 2px;
+  border-radius: 8px;
+  height: 1.5rem;
+}
+
 #right {
   height: 100%;
   min-width: 30%;
@@ -23,10 +41,12 @@ body {
 }
 
 .legend-item {
+  display: flex;
   flex-direction: row;
 }
 
 .seat-icon {
+  display: flex;
   height: 2em;
   width: 2em;
   background-color: gray;
@@ -63,8 +83,12 @@ body {
 
 .seat-row {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.seat-icon.right-aisle {
+  margin-left: 1rem;
 }
 
 #number-passengers {

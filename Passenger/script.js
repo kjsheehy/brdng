@@ -10,7 +10,7 @@ const flightSelect = document.getElementById('flight-select');
 const boardMessageEl = document.getElementById('board-message');
 
 const rows = 20;
-const seats = ['A', 'B', 'C', 'D', 'E'];
+const seats = ['A', 'B', 'C', 'D', 'E', 'F'];
 let flightID;
 let partyID;
 let intervalID;
@@ -59,7 +59,10 @@ function populateSeatMap() {
 
     for (let j = 0; j < seats.length; j++) {
       let seatButton = document.createElement('button');
-      seatButton.setAttribute('class', 'seat-button');
+      seatButton.setAttribute(
+        'class',
+        j === 3 ? 'seat-button right-aisle' : 'seat-button'
+      );
       seatButton.setAttribute('id', i + 1 + seats[j]);
       let seatID = document.createTextNode(i + 1 + seats[j]);
       seatButton.appendChild(seatID);

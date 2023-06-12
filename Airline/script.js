@@ -15,7 +15,7 @@ const overheadEl = document.getElementById('overhead');
 const gateCheckEl = document.getElementById('gate-check');
 
 const rows = 20;
-const seats = ['A', 'B', 'C', 'D', 'E'];
+const seats = ['A', 'B', 'C', 'D', 'E', 'F'];
 const baggageCapacity = 50;
 let flightID;
 let timerIntervalID;
@@ -92,7 +92,7 @@ function updateInfo() {
 
 const startBoarding = function () {
   if (boardingMethodSelect.value === 'Free for All')
-    numberPassengersBoardingEl.value = '100';
+    numberPassengersBoardingEl.value = '120';
   fetch(`http://localhost:5001/api/boardingStart`, {
     method: 'PUT',
     headers: {
@@ -166,7 +166,10 @@ function populateSeatMap(rows, seats) {
 
     for (let j = 0; j < seats.length; j++) {
       let seatIcon = document.createElement('div');
-      seatIcon.setAttribute('class', 'seat-icon');
+      seatIcon.setAttribute(
+        'class',
+        j === 3 ? 'seat-icon right-aisle' : 'seat-icon'
+      );
       seatIcon.setAttribute('id', i + 1 + seats[j]);
       let seatID = document.createTextNode(i + 1 + seats[j]);
       seatIcon.appendChild(seatID);

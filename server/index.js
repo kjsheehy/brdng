@@ -16,7 +16,7 @@ app.use(
 );
 
 const rows = 20;
-const columns = ['A', 'B', 'C', 'D', 'E'];
+const columns = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 const boardingMethods = [
   {
