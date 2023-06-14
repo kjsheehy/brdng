@@ -4,6 +4,7 @@ body {
   background-color: beige;
   display: flex;
   justify-content: space-around;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .container {
@@ -11,6 +12,12 @@ body {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
 }
 
 input {
@@ -32,10 +39,6 @@ button {
   padding-top: 0;
   padding-bottom: 0;
 }
-
-/* #left .container * {
-  margin: 3px;
-} */
 
 #right {
   height: 100%;
