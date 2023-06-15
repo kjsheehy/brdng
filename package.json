@@ -1,8 +1,17 @@
 {
+  "name": "brdng",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@hapi/joi": "^17.1.1",
     "cors": "^2.8.5",
-    "joi": "^17.9.2",
-    "node": "^20.2.0"
+    "express": "^4.18.2",
+    "joi": "^17.9.2"
   }
 }
