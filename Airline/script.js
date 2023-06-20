@@ -19,6 +19,7 @@ const seats = ['A', 'B', 'C', 'D', 'E', 'F'];
 const baggageCapacity = 50;
 let flightID;
 let timerIntervalID;
+const apiURL = 'http://134.209.38.108/api';
 
 populateSeatMap(rows, seats);
 overheadEl.textContent = `0 / ${baggageCapacity}`;
@@ -27,7 +28,7 @@ populateFlightSelect();
 populateBoardingMethods();
 
 function populateFlightSelect() {
-  fetch('http://localhost:5001/api/flightIDs')
+  fetch(`${apiURL}/flightIDs`)
     .then((res) => res.json())
     .then((flightIDs) => {
       flightIDs.forEach((id) => {
@@ -48,7 +49,7 @@ flightSelect.onchange = function () {
 };
 
 function populateBoardingMethods() {
-  fetch('http://localhost:5001/api/boardingMethods')
+  fetch(`${apiURL}/boardingMethods`)
     .then((res) => res.json())
     .then((methods) => {
       methods.forEach((method) => {
@@ -61,7 +62,7 @@ function populateBoardingMethods() {
 }
 
 function updateInfo() {
-  fetch(`http://localhost:5001/api/parties/${flightID}`)
+  fetch(`${apiURL}/parties/${flightID}`)
     .then((res) => res.json())
     .then((parties) => {
       parties.forEach((party) => {
@@ -77,7 +78,7 @@ function updateInfo() {
         });
       });
     });
-  fetch(`http://localhost:5001/api/baggage/${flightID}`)
+  fetch(`${apiURL}/baggage/${flightID}`)
     .then((res) => {
       if (!res.ok)
         throw new Error('Error fetching baggage info from the server');
@@ -93,7 +94,7 @@ function updateInfo() {
 const startBoarding = function () {
   if (boardingMethodSelect.value === 'Free for All')
     numberPassengersBoardingEl.value = '120';
-  fetch(`http://localhost:5001/api/boardingStart`, {
+  fetch(`${apiURL}/boardingStart`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -121,7 +122,7 @@ const startBoarding = function () {
 };
 
 function closeBoarding() {
-  fetch(`http://localhost:5001/api/boardingClose/${flightID}`, {
+  fetch(`${apiURL}/boardingClose/${flightID}`, {
     method: 'PUT',
   })
     .then((res) => {
