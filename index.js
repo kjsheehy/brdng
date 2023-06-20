@@ -8,6 +8,8 @@ const cors = require('cors');
 const port = process.env.PORT || 5001;
 app.listen(port, () => console.log(`listening on port ${port}...`));
 
+app.use(express.static('public'));
+
 app.use(express.json());
 app.use(
   cors({
