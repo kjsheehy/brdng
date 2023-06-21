@@ -9,6 +9,8 @@ const seatedButton = document.getElementById('seated');
 const flightSelect = document.getElementById('flight-select');
 const boardMessageEl = document.getElementById('board-message');
 
+const apiURL = 'http://134.209.38.108/api';
+
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E', 'F'];
 let flightID;
@@ -19,7 +21,7 @@ populateSeatMap();
 populateFlightSelect();
 
 function populateFlightSelect() {
-  fetch('http://localhost:5001/api/flightIDs')
+  fetch(`${apiURL}/flightIDs`)
     .then((res) => res.json())
     .then((flightIDs) => {
       flightIDs.forEach((id) => {
@@ -39,7 +41,7 @@ flightSelect.onchange = function () {
     seatButtons[i].disabled = false;
   }
   //fetch parties for the selected flight and only enable the buttons for seats not represented in the parties
-  fetch(`http://localhost:5001/api/parties/${flightID}`)
+  fetch(`${apiURL}/parties/${flightID}`)
     .then((res) => res.json())
     .then((parties) => {
       parties.forEach((party) => {
@@ -101,7 +103,7 @@ submitSeatsButton.onclick = function () {
     selectedSeats.push(el.id);
   }
   if (flightID === '' || selectedSeats.length === 0) return;
-  fetch(`http://localhost:5001/api/parties/${flightID}`, {
+  fetch(`${apiURL}/parties/${flightID}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
@@ -133,7 +135,7 @@ submitSeatsButton.onclick = function () {
 };
 
 seatedButton.onclick = function () {
-  fetch(`http://localhost:5001/api/seated/${flightID}/${partyID}`, {
+  fetch(`${apiURL}/seated/${flightID}/${partyID}`, {
     method: 'PUT',
   }).then((res) => {
     boardMessageEl.classList.add('hidden');
@@ -145,7 +147,7 @@ seatedButton.onclick = function () {
 };
 
 function checkBoardingStatus() {
-  fetch(`http://localhost:5001/api/boardingStatus/${flightID}/${partyID}`)
+  fetch(`${apiURL}/boardingStatus/${flightID}/${partyID}`)
     .then((res) => res.json())
     .then((status) => {
       if (status === 'boarding') {
