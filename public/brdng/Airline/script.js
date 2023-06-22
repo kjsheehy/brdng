@@ -19,7 +19,7 @@ const seats = ['A', 'B', 'C', 'D', 'E', 'F'];
 const baggageCapacity = 50;
 let flightID;
 let timerIntervalID;
-const apiURL = 'kjsheehy.com/brdng/api';
+const apiURL = 'https://kjsheehy.com/brdng/api';
 
 populateSeatMap(rows, seats);
 overheadEl.textContent = `0 / ${baggageCapacity}`;
