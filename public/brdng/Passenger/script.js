@@ -9,7 +9,7 @@ const seatedButton = document.getElementById('seated');
 const flightSelect = document.getElementById('flight-select');
 const boardMessageEl = document.getElementById('board-message');
 
-const apiURL = 'http://134.209.38.108/api';
+const apiURL = 'kjsheehy.com/brdng/api';
 
 const rows = 20;
 const seats = ['A', 'B', 'C', 'D', 'E', 'F'];

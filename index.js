@@ -6,6 +6,8 @@ const Joi = require('joi');
 const cors = require('cors');
 
 const port = process.env.PORT || 5001;
+const uriBase = '/brdng/api';
+
 app.listen(port, () => console.log(`listening on port ${port}...`));
 
 app.use(express.static('public'));
@@ -205,21 +207,21 @@ fa863.parties = [
 ];
 
 //READ request handlers
-app.get('/api/flightIDs', (req, res) => {
+app.get(`${uriBase}/flightIDs`, (req, res) => {
   const flightIDs = flights.map((f) => f.flightID);
   res.send(flightIDs);
 });
 
-app.get('/api/boardingMethods', (req, res) => {
+app.get(`${uriBase}/boardingMethods`, (req, res) => {
   res.send(boardingMethods.map((method) => method.name));
 });
 
-app.get('/api/parties/:flightID', (req, res) => {
+app.get(`${uriBase}/parties/:flightID`, (req, res) => {
   const flight = findFlight(req.params.flightID);
   res.send(flight.parties);
 });
 
-app.get('/api/boardingStatus/:flightID/:id', (req, res) => {
+app.get(`${uriBase}/boardingStatus/:flightID/:id`, (req, res) => {
   const flight = findFlight(req.params.flightID);
   const party = flight.parties.find((p) => p.id === req.params.id);
   if (!party)
@@ -229,13 +231,13 @@ app.get('/api/boardingStatus/:flightID/:id', (req, res) => {
   res.send(JSON.stringify(party.status));
 });
 
-app.get('/api/baggage/:flightID', (req, res) => {
+app.get(`${uriBase}/baggage/:flightID`, (req, res) => {
   const flight = findFlight(req.params.flightID);
   res.send(flight.baggage);
 });
 
 //CREATE Request Handlers
-app.post('/api/parties/:flightID', (req, res) => {
+app.post(`${uriBase}/parties/:flightID`, (req, res) => {
   const { error } = validateParties(req.body);
   if (error) {
     res.status(400).send(error.details[0].message);
@@ -261,7 +263,7 @@ app.post('/api/parties/:flightID', (req, res) => {
 //UPDATE Request Handlers
 
 //Airline UI tells Server when to start the boarding process
-app.put('/api/boardingStart', (req, res) => {
+app.put(`${uriBase}/boardingStart`, (req, res) => {
   const flight = flights.find((f) => f.flightID === req.body.flightID);
   const boardingMethod = boardingMethods.find(
     (method) => method.name === req.body.boardingMethod
@@ -278,7 +280,7 @@ app.put('/api/boardingStart', (req, res) => {
   res.send(flight);
 });
 
-app.put('/api/boardingClose/:flightID', (req, res) => {
+app.put(`${uriBase}/boardingClose/:flightID`, (req, res) => {
   const flight = flights.find((f) => f.flightID === req.params.flightID);
   if (!flight) {
     res.status(404).send(`Flight with ID ${req.params.flightID} not found`);
@@ -291,7 +293,7 @@ app.put('/api/boardingClose/:flightID', (req, res) => {
 });
 
 //Passenger UI tells Server when party is seated
-app.put('/api/seated/:flightID/:partyID', (req, res) => {
+app.put(`${uriBase}/seated/:flightID/:partyID`, (req, res) => {
   const flight = findFlight(req.params.flightID);
   const party = flight.parties.find((p) => p.id === req.params.partyID);
   if (!party) {
